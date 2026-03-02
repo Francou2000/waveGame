@@ -68,8 +68,6 @@ namespace WaveGame.Combat.Projectiles.Archetypes
         {
             if (hit.collider.TryGetComponent<IDamageable>(out var damageable) && damageable.TeamId != projectile.TeamId)
             {
-                context.RegisterTarget(damageable);
-
                 if (context.HitRegistry.CanHit(projectile.InstanceId, damageable.EntityId, context.TimeNow, projectile.Definition.HitCooldownPerTarget))
                 {
                     context.EnqueueHit(new HitEvent

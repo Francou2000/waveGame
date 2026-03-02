@@ -4,10 +4,6 @@ Documento de casos de prueba para validar funcionalidad, estabilidad y performan
 
 ## 1) Alcance
 
-## 0) Modo prototipo para esta instancia
-
-Para esta iteración, los enemigos pueden ser `GameObject` simples con `Collider` + `DestroyOnProjectileHit` (sin barra de vida, stats ni IA compleja).
-
 Valida:
 - Simulación centralizada.
 - Colisión por segmento / overlap non-alloc.

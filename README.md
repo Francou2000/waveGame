@@ -22,3 +22,4 @@ Damage contracts/components under `Assets/Scripts/Combat/Damage`:
 - `IDamageable`
 - `DamageableBehaviour` (implementación con vida)
 - `DestroyOnProjectileHit` (enemigo simple que se destruye en el primer impacto)
+- `DamageableBehaviour` (implementación demo)

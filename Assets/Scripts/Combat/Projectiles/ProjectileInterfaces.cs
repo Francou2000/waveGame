@@ -10,7 +10,6 @@ namespace WaveGame.Combat.Projectiles
 
     public interface IProjectileTargetProvider
     {
-        void Register(IDamageable target);
         bool TryGetTarget(int entityId, out IDamageable target);
         int AcquireTarget(Vector3 origin, Vector3 forward, float radius, float preferForwardAngleDeg, int teamId);
     }
@@ -22,7 +21,6 @@ namespace WaveGame.Combat.Projectiles
         IProjectileTargetProvider TargetProvider { get; }
         int SphereCastNonAlloc(Vector3 origin, float radius, Vector3 direction, RaycastHit[] hits, float maxDistance, LayerMask layerMask);
         int OverlapSphereNonAlloc(Vector3 center, float radius, Collider[] colliders, LayerMask layerMask);
-        void RegisterTarget(IDamageable target);
         void EnqueueHit(in HitEvent hitEvent);
     }
 }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using WaveGame.Combat.Damage;
 using WaveGame.Combat.Projectiles.Archetypes;
 
 namespace WaveGame.Combat.Projectiles
@@ -143,11 +142,6 @@ namespace WaveGame.Combat.Projectiles
             }
 
             return _physicsQueries < globalConfig.MaxPhysicsQueriesPerFrame;
-        }
-
-        public void RegisterTarget(IDamageable target)
-        {
-            _targetProvider.Register(target);
         }
 
         public void EnqueueHit(in HitEvent hitEvent)
