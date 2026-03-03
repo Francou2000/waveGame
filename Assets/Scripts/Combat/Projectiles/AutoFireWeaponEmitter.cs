@@ -1,4 +1,5 @@
 using UnityEngine;
+using WaveGame.Combat.Player;
 
 namespace WaveGame.Combat.Projectiles
 {
@@ -8,6 +9,8 @@ namespace WaveGame.Combat.Projectiles
         [SerializeField] private WeaponDefinition weaponDefinition;
         [SerializeField] private int ownerEntityId = 1;
         [SerializeField] private int teamId = 1;
+        [SerializeField] private PlayerCombatAnchorProvider combatSource;
+        [SerializeField] private PlayerStatsRuntime playerStats;
 
         [Header("Runtime stats")]
         [SerializeField] private float attackSpeedMultiplier = 1f;
@@ -66,7 +69,8 @@ namespace WaveGame.Combat.Projectiles
 
         private float GetFinalCooldown()
         {
-            var speed = Mathf.Max(0.01f, attackSpeedMultiplier);
+            var statSpeed = playerStats != null ? playerStats.AttackSpeedMultiplier : 1f;
+            var speed = Mathf.Max(0.01f, attackSpeedMultiplier * statSpeed);
             return Mathf.Max(0.08f, weaponDefinition.BaseCooldown / speed);
         }
 
@@ -86,7 +90,7 @@ namespace WaveGame.Combat.Projectiles
 
         private void FireVolley(float now)
         {
-            var muzzle = transform.TransformPoint(weaponDefinition.MuzzleLocalOffset);
+            var muzzle = GetMuzzlePosition();
             var targetId = AcquireTarget(muzzle, now);
             var baseDir = ResolveAimDirection(muzzle, targetId);
 
@@ -108,7 +112,7 @@ namespace WaveGame.Combat.Projectiles
             var targeting = weaponDefinition.Targeting;
             var range = targeting != null ? targeting.AcquireRadius : weaponDefinition.Range;
             var cone = 180f;
-            var forward = transform.forward;
+            var forward = GetForward();
 
             if (targeting != null)
             {
@@ -152,7 +156,7 @@ namespace WaveGame.Combat.Projectiles
                 }
             }
 
-            return transform.forward;
+            return GetForward();
         }
 
         private bool HasLineOfSight(Vector3 origin, int targetId)
@@ -175,6 +179,17 @@ namespace WaveGame.Combat.Projectiles
             }
 
             return hit.collider != null && hit.collider.TryGetComponent<WaveGame.Combat.Interfaces.ITargetable>(out var targetable) && targetable.EntityId == targetId;
+        }
+
+        private Vector3 GetMuzzlePosition()
+        {
+            var anchor = combatSource != null ? combatSource.CombatAnchor : transform;
+            return anchor.TransformPoint(weaponDefinition.MuzzleLocalOffset);
+        }
+
+        private Vector3 GetForward()
+        {
+            return combatSource != null ? combatSource.Forward : transform.forward;
         }
 
         private Vector3 ApplyPattern(Vector3 baseDirection, int index, int total, float now)

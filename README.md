@@ -6,6 +6,7 @@
 - Guía paso a paso de implementación: `docs/proyectiles-guia-implementacion-paso-a-paso.md`
 - Plan/casos de prueba: `docs/proyectiles-plan-pruebas.md`
 - Data-driven starter alignment: `docs/data-driven-starter-alignment.md`
+- Controladores Player/Enemy (milestone): `docs/controladores-player-enemigos-techdoc.md`
 
 ## Unity implementation
 

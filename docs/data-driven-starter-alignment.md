@@ -33,3 +33,9 @@ Se revisó el repositorio contra el spec de Auto-Fire + Projectiles + Targeting 
 - Agregar `MostDense` y `LowestHP` reales en targeting (hoy quedan como placeholders de modo).
 - Implementar powerups `ModifierSO`/`PowerUpSO`.
 - Crear `Starter content` (SOs iniciales: Pistol Auto, Homing Wand, Laser Beam).
+
+
+## Player/Enemy controllers base (nuevo)
+- `PlayerMotor`, `PlayerAim`, `PlayerCombatAnchorProvider`, `PlayerStatsRuntime` + `PlayerStatsDefinitionSO`.
+- `EnemySystem` centralizado con seek + separación en ticks.
+- `EnemySpawner` con pooling y spawn budget por segundo.
