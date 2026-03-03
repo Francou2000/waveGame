@@ -22,6 +22,7 @@ Core scripts under `Assets/Scripts/Combat/Projectiles`:
 - `FirePatternSO` / `TargetingDefinitionSO` (patrón y targeting desacoplados)
 - `BasicPlayerController` (WASD + disparo Mouse0 para prototipo)
 - `TestingArenaSpawner` (escena rápida de testing)
+- `StressArenaBootstrap` (auto-wire/config para stress arena)
 
 Damage contracts/components under `Assets/Scripts/Combat/Damage`:
 

@@ -16,6 +16,14 @@ namespace WaveGame.Combat.Enemy
         private readonly HashSet<EnemyRuntime> _alive = new();
         private float _spawnBudget;
 
+
+        public void ConfigureRuntime(int newMaxAlive, float newSpawnPerSecond, float newSpawnRadius)
+        {
+            maxAlive = Mathf.Max(1, newMaxAlive);
+            spawnPerSecond = Mathf.Max(0f, newSpawnPerSecond);
+            spawnRadius = Mathf.Max(1f, newSpawnRadius);
+        }
+
         private void Awake()
         {
             if (enemyPrefab == null)

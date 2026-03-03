@@ -55,3 +55,25 @@ Esto permite que weapon + targeting consuman datos reales de player.
 - Evitar `Transform` writes individuales con batches si se llega a miles de enemigos.
 - Agregar avoidance de paredes simple en `EnemySystem`.
 - Migrar estructura física de scripts a `Assets/Game/Combat/*`.
+
+## 6) Stress Arena: estado y cómo correrla hoy
+
+Sí, ya se puede probar end-to-end con la base actual.
+
+### Setup recomendado (rápido)
+1. `Player`: `CharacterController` + `PlayerMotor` + `PlayerAim` + `PlayerCombatAnchorProvider` + `AutoFireWeaponEmitter`.
+2. `EnemyPrefab`: `EnemyRuntime` + `CapsuleCollider` en layer de enemigos.
+3. Escena: `ProjectileSystem` + `EnemySystem` + `EnemySpawner` + `StressArenaBootstrap`.
+4. En `StressArenaBootstrap`, asignar (o dejar auto-wire):
+   - `playerTransform`
+   - `enemySystem`
+   - `enemySpawner`
+   - activar `applyRecommendedStressValues`.
+
+### Qué aplica `StressArenaBootstrap`
+- Auto-wire de `EnemySystem.playerTarget`.
+- Configuración runtime del `EnemySpawner` (`maxAlive`, `spawnPerSecond`, `spawnRadius`).
+
+### Observación
+- `TestingArenaSpawner` sirve para pruebas rápidas/chicas.
+- Para stress sostenido usar `EnemySpawner` + pooling.

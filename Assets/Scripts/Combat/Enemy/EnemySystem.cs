@@ -29,6 +29,12 @@ namespace WaveGame.Combat.Enemy
             _separationCacheByEnemy[enemy.EntityId] = Vector3.zero;
         }
 
+
+        public void SetPlayerTarget(Transform target)
+        {
+            playerTarget = target;
+        }
+
         public void Unregister(EnemyRuntime enemy)
         {
             if (enemy == null)
