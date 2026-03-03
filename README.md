@@ -7,6 +7,7 @@
 - Plan/casos de prueba: `docs/proyectiles-plan-pruebas.md`
 - Data-driven starter alignment: `docs/data-driven-starter-alignment.md`
 - Controladores Player/Enemy (milestone): `docs/controladores-player-enemigos-techdoc.md`
+- Enemy System (Stats/Death/XP/Boss base): `docs/enemy-system-stats-death-xp-techdoc.md`
 
 ## Unity implementation
 

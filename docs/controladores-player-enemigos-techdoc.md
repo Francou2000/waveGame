@@ -63,7 +63,7 @@ Sí, ya se puede probar end-to-end con la base actual.
 ### Setup recomendado (rápido)
 1. `Player`: `CharacterController` + `PlayerMotor` + `PlayerAim` + `PlayerCombatAnchorProvider` + `AutoFireWeaponEmitter`.
 2. `EnemyPrefab`: `EnemyRuntime` + `CapsuleCollider` en layer de enemigos.
-3. Escena: `ProjectileSystem` + `EnemySystem` + `EnemySpawner` + `StressArenaBootstrap`.
+3. Escena: `ProjectileSystem` + `EnemySystem` + `EnemySpawner` + `EnemyDeathSystem` + `XpOrbSystem` + `StressArenaBootstrap`.
 4. En `StressArenaBootstrap`, asignar (o dejar auto-wire):
    - `playerTransform`
    - `enemySystem`
@@ -77,3 +77,9 @@ Sí, ya se puede probar end-to-end con la base actual.
 ### Observación
 - `TestingArenaSpawner` sirve para pruebas rápidas/chicas.
 - Para stress sostenido usar `EnemySpawner` + pooling.
+
+
+### XP orbs y muerte
+- `EnemyRuntime` emite `DeathRequested`.
+- `EnemyDeathSystem` resuelve muerte y spawnea XP via `XpOrbSystem`.
+- `XpOrbSystem` aplica pooling, merge y magnet/pickup hacia el player.

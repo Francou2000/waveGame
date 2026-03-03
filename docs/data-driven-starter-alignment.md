@@ -39,3 +39,8 @@ Se revisó el repositorio contra el spec de Auto-Fire + Projectiles + Targeting 
 - `PlayerMotor`, `PlayerAim`, `PlayerCombatAnchorProvider`, `PlayerStatsRuntime` + `PlayerStatsDefinitionSO`.
 - `EnemySystem` centralizado con seek + separación en ticks.
 - `EnemySpawner` con pooling y spawn budget por segundo.
+
+
+## Enemy system additions
+- `EnemyDefinitionSO`, `EnemyDropTableSO`, `EnemyVisualSetSO`, `BossPhaseProfileSO`, `BossLootSO`.
+- `EnemyDeathSystem` + `XpOrbSystem` + `XpOrbRuntime` con pooling y merge on spawn.

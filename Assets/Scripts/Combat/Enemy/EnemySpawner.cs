@@ -6,7 +6,9 @@ namespace WaveGame.Combat.Enemy
     public sealed class EnemySpawner : MonoBehaviour
     {
         [SerializeField] private EnemyRuntime enemyPrefab;
+        [SerializeField] private EnemyDefinitionSO enemyDefinition;
         [SerializeField] private EnemySystem enemySystem;
+        [SerializeField] private EnemyDeathSystem deathSystem;
         [SerializeField] private int initialPoolSize = 64;
         [SerializeField] private int maxAlive = 400;
         [SerializeField] private float spawnPerSecond = 20f;
@@ -15,7 +17,6 @@ namespace WaveGame.Combat.Enemy
         private readonly Queue<EnemyRuntime> _pool = new();
         private readonly HashSet<EnemyRuntime> _alive = new();
         private float _spawnBudget;
-
 
         public void ConfigureRuntime(int newMaxAlive, float newSpawnPerSecond, float newSpawnRadius)
         {
@@ -56,7 +57,13 @@ namespace WaveGame.Combat.Enemy
             {
                 var enemy = Instantiate(enemyPrefab, transform);
                 enemy.gameObject.SetActive(false);
+                enemy.SetDefinition(enemyDefinition);
                 enemy.Died += OnEnemyDied;
+                if (deathSystem != null)
+                {
+                    deathSystem.Register(enemy);
+                }
+
                 _pool.Enqueue(enemy);
             }
         }
@@ -87,6 +94,24 @@ namespace WaveGame.Combat.Enemy
             _alive.Remove(enemy);
             enemySystem.Unregister(enemy);
             _pool.Enqueue(enemy);
+        }
+
+        private void OnDestroy()
+        {
+            if (deathSystem == null)
+            {
+                return;
+            }
+
+            foreach (var enemy in _pool)
+            {
+                deathSystem.Unregister(enemy);
+            }
+
+            foreach (var enemy in _alive)
+            {
+                deathSystem.Unregister(enemy);
+            }
         }
     }
 }

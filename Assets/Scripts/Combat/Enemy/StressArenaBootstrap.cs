@@ -11,6 +11,8 @@ namespace WaveGame.Combat.Enemy
         [SerializeField] private Transform playerTransform;
         [SerializeField] private EnemySystem enemySystem;
         [SerializeField] private EnemySpawner enemySpawner;
+        [SerializeField] private EnemyDeathSystem enemyDeathSystem;
+        [SerializeField] private XpOrbSystem xpOrbSystem;
         [SerializeField] private bool applyRecommendedStressValues = true;
 
         [Header("Recommended Stress")]
@@ -28,6 +30,16 @@ namespace WaveGame.Combat.Enemy
             if (enemySpawner == null)
             {
                 enemySpawner = FindFirstObjectByType<EnemySpawner>();
+            }
+
+            if (enemyDeathSystem == null)
+            {
+                enemyDeathSystem = FindFirstObjectByType<EnemyDeathSystem>();
+            }
+
+            if (xpOrbSystem == null)
+            {
+                xpOrbSystem = FindFirstObjectByType<XpOrbSystem>();
             }
 
             if (playerTransform == null)
