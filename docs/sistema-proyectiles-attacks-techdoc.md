@@ -439,3 +439,68 @@ Each Update:
   foreach hit target:
      if cooldown ok -> damage
 ```
+
+## 15) Extensión aplicada — Auto-Fire + Auto-Aim (Survivors-like)
+
+### 15.1 Decisión de arquitectura
+
+El disparo automático se implementa en un emisor de arma (`AutoFireWeaponEmitter`) y **no** en el proyectil.
+
+Flujo:
+
+`AutoFireWeaponEmitter.Update()` → adquisición de target/dirección → `ProjectileSystem.TrySpawn(...)` → simulación por arquetipo → `HitResolver`.
+
+### 15.2 WeaponDefinition y cooldown estable
+
+Se agrega `WeaponDefinition` (`ScriptableObject`) con:
+
+- `BaseCooldown`
+- `ProjectilesPerShot`
+- `BurstCount` + `BurstInterval`
+- `SpreadAngle`
+- `Range`, `TargetingMode`, `ConeAngle`
+- `RequiresLineOfSight`
+- `RetargetInterval`
+- `ProjectileDefinition`
+- `MuzzleOffset`
+
+Cooldown se maneja por timestamp:
+
+`nextFireTime = now + cooldownFinal`
+
+con:
+
+`cooldownFinal = max(0.05, BaseCooldown / AttackSpeedMultiplier)`
+
+### 15.3 Auto-aim y target cache
+
+`AutoFireWeaponEmitter` mantiene `currentTargetId` y reacquire por intervalo (`RetargetInterval`), evitando scans por frame innecesarios.
+
+- `TargetingMode.Nearest`: adquisición en 360°
+- `TargetingMode.ForwardCone`: adquisición limitada a cono (filtro duro por ángulo)
+- `TargetingMode.RandomInRange`: forward aleatorio en plano XZ dentro del rango
+
+Opcionalmente valida LoS con raycast al candidato final.
+
+### 15.4 Spawn direction + targetId (consistencia straight/homing)
+
+Al disparar:
+
+1. Se calcula `aimDir = normalize(targetPos - muzzlePos)` (o `forward` fallback).
+2. Se aplican patrones de tiro (`ProjectilesPerShot`, `SpreadAngle`, `Burst`).
+3. Cada instancia se crea con:
+   - `dir = aimDir` (o dirección con spread)
+   - `targetId` en `ProjectileSpawnContext`
+
+Comportamiento resultante:
+
+- `Straight`: usa `dir` inicial y no corrige.
+- `Homing`: usa `targetId` inicial y luego steering/retarget.
+
+### 15.5 Scripts agregados para escena de testing
+
+- `AutoFireWeaponEmitter`
+- `WeaponDefinition`
+- `TestingArenaSpawner` (spawn rápido de enemigos en anillo)
+
+Con esto se puede validar end-to-end sin IA compleja.

@@ -18,12 +18,12 @@ namespace WaveGame.Combat.Projectiles
 
         public void Register(IDamageable target)
         {
-            _targetsById[target.EntityId] = target;
-        }
+            if (target == null)
+            {
+                return;
+            }
 
-        public void Unregister(IDamageable target)
-        {
-            _targetsById.Remove(target.EntityId);
+            _targetsById[target.EntityId] = target;
         }
 
         public bool TryGetTarget(int entityId, out IDamageable target)
@@ -53,9 +53,21 @@ namespace WaveGame.Combat.Projectiles
                 Register(damageable);
 
                 var to = damageable.Position - origin;
+                if (to.sqrMagnitude <= Mathf.Epsilon)
+                {
+                    continue;
+                }
+
+                var toNormalized = to.normalized;
+                var angle = Vector3.Angle(forward, toNormalized);
+                var coneLimit = Mathf.Clamp(preferForwardAngleDeg, 0f, 180f);
+                if (coneLimit < 179.9f && angle > coneLimit)
+                {
+                    continue;
+                }
+
                 var distScore = -to.sqrMagnitude;
-                var angle = Vector3.Angle(forward, to.normalized);
-                var angleScore = angle <= preferForwardAngleDeg ? 1f : 0f;
+                var angleScore = 1f - (angle / 180f);
                 var score = distScore + (angleScore * 1000f);
 
                 if (score > bestScore)

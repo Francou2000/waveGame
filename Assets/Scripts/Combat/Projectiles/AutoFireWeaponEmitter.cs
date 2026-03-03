@@ -110,7 +110,7 @@ namespace WaveGame.Combat.Projectiles
             if (now >= _nextRetargetTime || !IsTargetValid(_currentTargetId))
             {
                 var cone = weaponDefinition.TargetingMode == TargetingMode.ForwardCone ? weaponDefinition.ConeAngle : 180f;
-                var forward = weaponDefinition.TargetingMode == TargetingMode.RandomInRange ? Random.insideUnitSphere.normalized : transform.forward;
+                var forward = weaponDefinition.TargetingMode == TargetingMode.RandomInRange ? GetRandomPlanarDirection() : transform.forward;
 
                 _currentTargetId = projectileSystem.TargetProvider.AcquireTarget(
                     origin,
@@ -173,6 +173,17 @@ namespace WaveGame.Combat.Projectiles
             }
 
             return transform.forward;
+        }
+
+        private static Vector3 GetRandomPlanarDirection()
+        {
+            var random = Random.insideUnitCircle.normalized;
+            if (random.sqrMagnitude <= Mathf.Epsilon)
+            {
+                return Vector3.forward;
+            }
+
+            return new Vector3(random.x, 0f, random.y);
         }
 
         private static Vector3 ApplySpread(Vector3 baseDirection, float spreadAngle, int index, int total)

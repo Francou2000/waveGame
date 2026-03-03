@@ -14,12 +14,14 @@ Core scripts under `Assets/Scripts/Combat/Projectiles`:
 - `ProjectileDefinition` y `ProjectileGlobalConfig` (`ScriptableObject`)
 - `ProjectileInstance`, `HitEvent`, `HitResolver`, `HitRegistry`
 - Arquetipos implementados: Straight, Homing, Hitscan, AoE, Beam, Aura
-- `ProjectileWeaponEmitter` para disparo desde armas
+- `ProjectileWeaponEmitter` para disparo manual desde armas
+- `AutoFireWeaponEmitter` (auto-fire + auto-aim estilo survivors)
+- `WeaponDefinition` (cadencia, burst, spread, targeting)
 - `BasicPlayerController` (WASD + disparo Mouse0 para prototipo)
+- `TestingArenaSpawner` (escena rápida de testing)
 
 Damage contracts/components under `Assets/Scripts/Combat/Damage`:
 
 - `IDamageable`
 - `DamageableBehaviour` (implementación con vida)
 - `DestroyOnProjectileHit` (enemigo simple que se destruye en el primer impacto)
-- `DamageableBehaviour` (implementación demo)
