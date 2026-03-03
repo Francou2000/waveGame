@@ -4,10 +4,6 @@ Documento de casos de prueba para validar funcionalidad, estabilidad y performan
 
 ## 1) Alcance
 
-## 0) Modo prototipo para esta instancia
-
-Para esta iteración, los enemigos pueden ser `GameObject` simples con `Collider` + `DestroyOnProjectileHit` (sin barra de vida, stats ni IA compleja).
-
 Valida:
 - Simulación centralizada.
 - Colisión por segmento / overlap non-alloc.
@@ -205,20 +201,3 @@ Crear tests PlayMode (NUnit + Unity Test Framework) para:
 - Casos robustez (R-01..R-04) pasan sin excepciones.
 - Stress P-01 cumple presupuesto general de frame y GC.
 - Soak P-02 sin regresiones graves.
-
-## 8) Escena de testing recomendada (auto-fire)
-
-- Player:
-  - `CharacterController`
-  - `BasicPlayerController`
-  - `AutoFireWeaponEmitter`
-- Combat root:
-  - `ProjectileSystem`
-- Arena:
-  - `TestingArenaSpawner` + prefab con `DestroyOnProjectileHit`
-
-Validación rápida:
-1. Entrar en Play y mover con WASD.
-2. Verificar disparo automático (o con Mouse0 si `requireMouseHold` está activo).
-3. Confirmar auto-aim a enemigos cercanos.
-4. Confirmar destrucción de enemigos al colisionar.

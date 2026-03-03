@@ -18,12 +18,12 @@ namespace WaveGame.Combat.Projectiles
 
         public void Register(IDamageable target)
         {
-            if (target == null)
-            {
-                return;
-            }
-
             _targetsById[target.EntityId] = target;
+        }
+
+        public void Unregister(IDamageable target)
+        {
+            _targetsById.Remove(target.EntityId);
         }
 
         public bool TryGetTarget(int entityId, out IDamageable target)

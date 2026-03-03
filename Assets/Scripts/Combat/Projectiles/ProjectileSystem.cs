@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using WaveGame.Combat.Damage;
 using WaveGame.Combat.Projectiles.Archetypes;
 
 namespace WaveGame.Combat.Projectiles
@@ -60,17 +59,9 @@ namespace WaveGame.Combat.Projectiles
 
             var instance = ProjectileInstance.Create(++_nextProjectileId, spawn.Definition, spawn.OwnerEntityId, spawn.TeamId, spawn.Position, spawn.Direction);
 
-            if (spawn.TargetEntityId >= 0)
-            {
-                instance.TargetEntityId = spawn.TargetEntityId;
-            }
-            else if (spawn.Definition.ArchetypeType == ProjectileArchetypeType.Homing)
-            {
-                instance.TargetEntityId = _targetProvider.AcquireTarget(spawn.Position, spawn.Direction, spawn.Definition.AcquireRadius, spawn.Definition.PreferForwardAngle, spawn.TeamId);
-            }
-
             if (spawn.Definition.ArchetypeType == ProjectileArchetypeType.Homing)
             {
+                instance.TargetEntityId = _targetProvider.AcquireTarget(spawn.Position, spawn.Direction, spawn.Definition.AcquireRadius, spawn.Definition.PreferForwardAngle, spawn.TeamId);
                 instance.NextRetargetTime = TimeNow + spawn.Definition.RetargetInterval;
             }
 
@@ -151,11 +142,6 @@ namespace WaveGame.Combat.Projectiles
             }
 
             return _physicsQueries < globalConfig.MaxPhysicsQueriesPerFrame;
-        }
-
-        public void RegisterTarget(IDamageable target)
-        {
-            _targetProvider.Register(target);
         }
 
         public void EnqueueHit(in HitEvent hitEvent)

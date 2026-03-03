@@ -19,8 +19,7 @@ Esta guía explica **cómo funciona** el sistema actual y cómo integrarlo en un
 - `ProjectileInstance`: estado liviano en runtime.
 - `HitRegistry`: evita double-hit por target/proyectil en ventanas cortas.
 - `IDamageable`: contrato para enemigos/objetivos dañables.
-- `DamageableBehaviour`: implementación simple con vida.
-- `DestroyOnProjectileHit`: implementación para prototipo (destrucción al primer impacto).
+- `DamageableBehaviour`: implementación simple de ejemplo.
 
 ### Arquetipos implementados
 - `StraightProjectileArchetype`
@@ -41,12 +40,11 @@ Esta guía explica **cómo funciona** el sistema actual y cómo integrarlo en un
 ## 3) Preparar enemigos para recibir daño
 
 1. Crea un prefab de enemigo con `Collider` (y opcional `Rigidbody` si lo necesitás en tu juego).
-2. Para este prototipo, añade `DestroyOnProjectileHit` al prefab.
-   - Si más adelante querés vida/estadísticas, reemplazalo por `DamageableBehaviour`.
+2. Añade `DamageableBehaviour` al prefab.
 3. Configura:
    - `entityId` único por instancia (en producción conviene asignarlo desde un sistema de entidades).
    - `teamId` del enemigo (por ejemplo `2`).
-   - Si usás `DamageableBehaviour`, también definir `health` inicial.
+   - `health` inicial.
 4. Verifica que el enemigo esté en la layer incluida por `enemyMask` / `HitMask`.
 
 ## 4) Crear un proyectil (data-driven)
@@ -99,51 +97,3 @@ Esta guía explica **cómo funciona** el sistema actual y cómo integrarlo en un
 - [ ] `MaxPhysicsQueriesPerFrame` calibrado con profiler.
 - [ ] Sin GC spikes durante combate sostenido.
 - [ ] Tests automatizados de reglas de hit y cooldown.
-
-## 9) Controlador de jugador básico (WASD + Mouse0)
-
-1. Crea un `GameObject` Player con:
-   - `CharacterController`
-   - `ProjectileWeaponEmitter`
-   - `BasicPlayerController`
-2. En `ProjectileWeaponEmitter` asigna:
-   - `projectileSystem`
-   - `projectileDefinition`
-   - `ownerEntityId` y `teamId` del jugador
-3. En `BasicPlayerController` asigna:
-   - `weaponEmitter` (el del mismo player)
-   - `cameraTransform` (opcional; si queda vacío usa `Camera.main`)
-4. Controles:
-   - Movimiento: `WASD`
-   - Disparo: mantener `Mouse Izquierdo`
-
-## 10) Setup de escena de testing (auto-fire + auto-aim)
-
-1. Crea un `WeaponDefinition`:
-   - `BaseCooldown`: `0.6`
-   - `ProjectilesPerShot`: `1`
-   - `BurstCount`: `1`
-   - `SpreadAngle`: `0-10`
-   - `Range`: `20`
-   - `TargetingMode`: `Nearest`
-   - `ProjectileDefinition`: asignar el proyectil (ej. straight/homing)
-2. En Player agrega `AutoFireWeaponEmitter`:
-   - asignar `ProjectileSystem`
-   - asignar `WeaponDefinition`
-   - `ownerEntityId/teamId`
-   - para pruebas manuales, activar `requireMouseHold`
-3. Crea prefab de enemigo simple con:
-   - `Collider`
-   - `DestroyOnProjectileHit`
-4. Crea un `GameObject` con `TestingArenaSpawner` y asigna el prefab enemigo.
-5. Ejecuta escena:
-   - mover con WASD (`BasicPlayerController`)
-   - mantener Mouse0 (si `requireMouseHold = true`) para auto-fire
-   - verificar auto-aim hacia enemigos y destrucción al impacto
-
-## 11) Qué testear rápido en esta escena
-
-- Cooldown estable (ritmo parejo, sin drift visible).
-- Cambio de `TargetingMode` (`Nearest`, `ForwardCone`, `RandomInRange`).
-- `ProjectilesPerShot` + `SpreadAngle` + `BurstCount`.
-- Diferencia entre `Straight` (no corrige) y `Homing` (corrige en vuelo).

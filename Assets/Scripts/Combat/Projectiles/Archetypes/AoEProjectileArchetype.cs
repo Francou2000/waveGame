@@ -23,8 +23,6 @@ namespace WaveGame.Combat.Projectiles.Archetypes
                     continue;
                 }
 
-                context.RegisterTarget(damageable);
-
                 if (!context.HitRegistry.CanHit(projectile.InstanceId, damageable.EntityId, context.TimeNow, projectile.Definition.HitCooldownPerTarget))
                 {
                     continue;
