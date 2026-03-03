@@ -26,7 +26,7 @@ namespace WaveGame.Combat.Projectiles
                 damage *= hitEvent.CritMultiplier;
             }
 
-            target.ApplyDamage(damage, hitEvent.DamageType, hitEvent.OwnerId, isCritical, hitEvent.KnockbackForce, hitEvent.HitPoint, hitEvent.HitNormal);
+            target.ApplyDamage(new DamageEvent(damage, hitEvent.DamageType, hitEvent.OwnerId, isCritical, hitEvent.KnockbackForce, hitEvent.HitPoint, hitEvent.HitNormal));
         }
     }
 }

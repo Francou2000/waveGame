@@ -1,5 +1,4 @@
 using UnityEngine;
-using WaveGame.Combat.Projectiles;
 
 namespace WaveGame.Combat.Damage
 {
@@ -8,15 +7,21 @@ namespace WaveGame.Combat.Damage
         [SerializeField] private int entityId;
         [SerializeField] private int teamId;
         [SerializeField] private float health = 100f;
+        [SerializeField] private float aimPointHeightOffset = 1f;
 
         public int EntityId => entityId;
         public int TeamId => teamId;
         public bool IsAlive => health > 0f;
         public Vector3 Position => transform.position;
 
-        public void ApplyDamage(float amount, DamageType damageType, int ownerId, bool isCritical, float knockbackForce, Vector3 hitPoint, Vector3 hitNormal)
+        public Vector3 GetAimPoint()
         {
-            health -= amount;
+            return transform.position + (Vector3.up * aimPointHeightOffset);
+        }
+
+        public void ApplyDamage(DamageEvent damageEvent)
+        {
+            health -= damageEvent.Amount;
             if (health <= 0f)
             {
                 health = 0f;

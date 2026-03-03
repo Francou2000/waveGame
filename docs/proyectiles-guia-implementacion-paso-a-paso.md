@@ -119,14 +119,11 @@ Esta guía explica **cómo funciona** el sistema actual y cómo integrarlo en un
 
 ## 10) Setup de escena de testing (auto-fire + auto-aim)
 
-1. Crea un `WeaponDefinition`:
-   - `BaseCooldown`: `0.6`
-   - `ProjectilesPerShot`: `1`
-   - `BurstCount`: `1`
-   - `SpreadAngle`: `0-10`
-   - `Range`: `20`
-   - `TargetingMode`: `Nearest`
-   - `ProjectileDefinition`: asignar el proyectil (ej. straight/homing)
+1. Crea assets data-driven:
+   - `WeaponDefinition`: `BaseCooldown`, `ProjectilesPerShot`, `Range`, `MuzzleLocalOffset`
+   - `FirePatternSO`: por ejemplo `Single` o `SpreadCone`
+   - `TargetingDefinitionSO`: por ejemplo `Nearest` o `ForwardConeNearest`
+   - Asignar `ProjectileDefinition` al `WeaponDefinition`
 2. En Player agrega `AutoFireWeaponEmitter`:
    - asignar `ProjectileSystem`
    - asignar `WeaponDefinition`
@@ -144,9 +141,9 @@ Esta guía explica **cómo funciona** el sistema actual y cómo integrarlo en un
 ## 11) Qué testear rápido en esta escena
 
 - Cooldown estable (ritmo parejo, sin drift visible).
-- Cambio de `TargetingMode` (`Nearest`, `ForwardCone`, `RandomInRange`).
+- Cambio de `TargetingModeSO` (`Nearest`, `ForwardConeNearest`, `RandomInRange`).
 - `ProjectilesPerShot` + `SpreadAngle` + `BurstCount`.
 - Diferencia entre `Straight` (no corrige) y `Homing` (corrige en vuelo).
 
 
-> Nota de targeting: `ForwardCone` aplica filtro duro por ángulo; `RandomInRange` usa dirección aleatoria planar (XZ) para conservar comportamiento top-down estable.
+> Nota de targeting: `ForwardConeNearest` aplica filtro duro por ángulo; `RandomInRange` usa dirección aleatoria planar (XZ) para conservar comportamiento top-down estable.

@@ -452,17 +452,11 @@ Flujo:
 
 ### 15.2 WeaponDefinition y cooldown estable
 
-Se agrega `WeaponDefinition` (`ScriptableObject`) con:
+Se agrega `WeaponDefinition` (`ScriptableObject`) y composición data-driven:
 
-- `BaseCooldown`
-- `ProjectilesPerShot`
-- `BurstCount` + `BurstInterval`
-- `SpreadAngle`
-- `Range`, `TargetingMode`, `ConeAngle`
-- `RequiresLineOfSight`
-- `RetargetInterval`
-- `ProjectileDefinition`
-- `MuzzleOffset`
+- `WeaponDefinition`: `BaseCooldown`, `ProjectilesPerShot`, `Range`, `MuzzleLocalOffset`, `ProjectileDefinition`
+- `FirePatternSO`: `Single`, `SpreadCone`, `Burst`, `Spiral`, `Alternating`, `RandomCone`
+- `TargetingDefinitionSO`: `Nearest`, `ForwardConeNearest`, `RandomInRange`, etc.
 
 Cooldown se maneja por timestamp:
 
@@ -476,9 +470,9 @@ con:
 
 `AutoFireWeaponEmitter` mantiene `currentTargetId` y reacquire por intervalo (`RetargetInterval`), evitando scans por frame innecesarios.
 
-- `TargetingMode.Nearest`: adquisición en 360°
-- `TargetingMode.ForwardCone`: adquisición limitada a cono (filtro duro por ángulo)
-- `TargetingMode.RandomInRange`: forward aleatorio en plano XZ dentro del rango
+- `TargetingModeSO.Nearest`: adquisición en 360°
+- `TargetingModeSO.ForwardConeNearest`: adquisición limitada a cono (filtro duro por ángulo)
+- `TargetingModeSO.RandomInRange`: forward aleatorio en plano XZ dentro del rango
 
 Opcionalmente valida LoS con raycast al candidato final.
 

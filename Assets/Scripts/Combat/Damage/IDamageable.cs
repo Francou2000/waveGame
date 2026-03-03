@@ -1,14 +1,12 @@
 using UnityEngine;
-using WaveGame.Combat.Projectiles;
+using WaveGame.Combat.Interfaces;
 
 namespace WaveGame.Combat.Damage
 {
-    public interface IDamageable
+    public interface IDamageable : ITargetable
     {
-        int EntityId { get; }
         int TeamId { get; }
-        bool IsAlive { get; }
         Vector3 Position { get; }
-        void ApplyDamage(float amount, DamageType damageType, int ownerId, bool isCritical, float knockbackForce, Vector3 hitPoint, Vector3 hitNormal);
+        void ApplyDamage(DamageEvent damageEvent);
     }
 }
