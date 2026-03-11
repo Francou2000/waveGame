@@ -10,7 +10,11 @@ namespace WaveGame.Combat.Player
     {
         public static Vector2 GetMoveInput()
         {
-            var input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            var input = Vector2.zero;
+
+#if ENABLE_LEGACY_INPUT_MANAGER
+            input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+#endif
 
 #if ENABLE_INPUT_SYSTEM
             if (input.sqrMagnitude <= Mathf.Epsilon && Keyboard.current != null)
@@ -32,10 +36,12 @@ namespace WaveGame.Combat.Player
 
         public static bool IsPrimaryFireHeld()
         {
+#if ENABLE_LEGACY_INPUT_MANAGER
             if (Input.GetMouseButton(0))
             {
                 return true;
             }
+#endif
 
 #if ENABLE_INPUT_SYSTEM
             return Mouse.current != null && Mouse.current.leftButton.isPressed;
