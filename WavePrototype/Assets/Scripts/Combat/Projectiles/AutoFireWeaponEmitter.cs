@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using WaveGame.Combat.Player;
 
 namespace WaveGame.Combat.Projectiles
@@ -18,7 +19,12 @@ namespace WaveGame.Combat.Projectiles
 
         [Header("Testing")]
         [SerializeField] private bool autoFireEnabled = true;
-        [SerializeField] private bool requireMouseHold;
+        [SerializeField] private bool requireAttackInput;
+
+        [Header("Input")]
+        [SerializeField] private InputActionReference attackAction;
+        [SerializeField] private PlayerInput playerInput;
+        [SerializeField] private string attackActionName = "Attack";
 
         private int _cachedTargetId = -1;
         private float _nextRetargetTime;
@@ -27,6 +33,35 @@ namespace WaveGame.Combat.Projectiles
         private float _nextBurstShotTime;
         private float _patternAngle;
         private bool _alternatingSide;
+        private InputAction _resolvedAttackAction;
+
+        private void Awake()
+        {
+            if (playerInput == null)
+            {
+                playerInput = GetComponent<PlayerInput>();
+            }
+
+            ResolveAttackAction();
+        }
+
+        private void OnEnable()
+        {
+            ResolveAttackAction();
+
+            if (attackAction != null)
+            {
+                _resolvedAttackAction?.Enable();
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (attackAction != null)
+            {
+                _resolvedAttackAction?.Disable();
+            }
+        }
 
         private void Update()
         {
@@ -64,7 +99,27 @@ namespace WaveGame.Combat.Projectiles
                 return false;
             }
 
-            return !requireMouseHold || Input.GetMouseButton(0);
+            return !requireAttackInput || IsAttackPressed();
+        }
+
+        private bool IsAttackPressed()
+        {
+            if (_resolvedAttackAction == null)
+            {
+                ResolveAttackAction();
+            }
+
+            return _resolvedAttackAction != null && _resolvedAttackAction.IsPressed();
+        }
+
+        private void ResolveAttackAction()
+        {
+            _resolvedAttackAction = attackAction != null ? attackAction.action : null;
+
+            if (_resolvedAttackAction == null && playerInput != null && playerInput.actions != null && !string.IsNullOrWhiteSpace(attackActionName))
+            {
+                _resolvedAttackAction = playerInput.actions.FindAction(attackActionName, false);
+            }
         }
 
         private float GetFinalCooldown()
@@ -233,8 +288,9 @@ namespace WaveGame.Combat.Projectiles
 
         private static Vector3 GetRandomPlanarDirection()
         {
-            var v = Random.insideUnitCircle.normalized;
-            return v.sqrMagnitude <= Mathf.Epsilon ? Vector3.forward : new Vector3(v.x, 0f, v.y);
+            var angle = Random.value * 360f;
+            var dir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+            return dir.normalized;
         }
     }
 }
