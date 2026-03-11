@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace WaveGame.Combat.Projectiles
 {
@@ -23,6 +24,10 @@ namespace WaveGame.Combat.Projectiles
         [Header("Shooting")]
         [SerializeField] private float fireRate = 6f;
 
+        [Header("Input")]
+        [SerializeField] private InputActionReference moveAction;
+        [SerializeField] private InputActionReference attackAction;
+
         private CharacterController _characterController;
         private float _verticalVelocity;
         private float _nextShotTime;
@@ -46,8 +51,7 @@ namespace WaveGame.Combat.Projectiles
 
         private void HandleMovement(float dt)
         {
-            var input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            input = Vector2.ClampMagnitude(input, 1f);
+            var input = ReadMoveInput();
 
             var moveDirection = GetMoveDirectionOnPlane(input);
             var horizontalVelocity = moveDirection * moveSpeed;
@@ -86,6 +90,39 @@ namespace WaveGame.Combat.Projectiles
             return (right * input.x + forward * input.y).normalized;
         }
 
+
+        private void OnEnable()
+        {
+            moveAction?.action?.Enable();
+            attackAction?.action?.Enable();
+        }
+
+        private void OnDisable()
+        {
+            moveAction?.action?.Disable();
+            attackAction?.action?.Disable();
+        }
+
+        private Vector2 ReadMoveInput()
+        {
+            if (moveAction == null || moveAction.action == null)
+            {
+                return Vector2.zero;
+            }
+
+            return Vector2.ClampMagnitude(moveAction.action.ReadValue<Vector2>(), 1f);
+        }
+
+        private bool IsAttackPressed()
+        {
+            if (attackAction == null || attackAction.action == null)
+            {
+                return false;
+            }
+
+            return attackAction.action.IsPressed();
+        }
+
         private void HandleShooting()
         {
             if (weaponEmitter == null)
@@ -93,7 +130,7 @@ namespace WaveGame.Combat.Projectiles
                 return;
             }
 
-            if (!Input.GetMouseButton(0))
+            if (!IsAttackPressed())
             {
                 return;
             }
