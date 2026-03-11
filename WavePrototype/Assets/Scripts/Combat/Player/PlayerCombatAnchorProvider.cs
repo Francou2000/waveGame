@@ -6,8 +6,8 @@ namespace WaveGame.Combat.Player
     {
         [SerializeField] private Transform combatAnchor;
 
-        public Vector3 Position => transform.position;
-        public Vector3 Forward => transform.forward;
+        public Vector3 Position => CombatAnchor.position;
+        public Vector3 Forward => CombatAnchor.forward;
         public Transform CombatAnchor => combatAnchor != null ? combatAnchor : transform;
 
         private void Reset()

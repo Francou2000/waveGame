@@ -42,6 +42,16 @@ namespace WaveGame.Combat.Projectiles
                 playerInput = GetComponent<PlayerInput>();
             }
 
+            if (combatSource == null)
+            {
+                combatSource = GetComponent<PlayerCombatAnchorProvider>();
+            }
+
+            if (playerStats == null)
+            {
+                playerStats = GetComponent<PlayerStatsRuntime>();
+            }
+
             ResolveAttackAction();
         }
 
@@ -67,6 +77,7 @@ namespace WaveGame.Combat.Projectiles
         {
             if (!CanRun())
             {
+                _pendingBurstShots = 0;
                 return;
             }
 
@@ -90,11 +101,18 @@ namespace WaveGame.Combat.Projectiles
 
             _pendingBurstShots = GetBurstCount();
             _nextFireTime = now + GetFinalCooldown();
+
+            if (_pendingBurstShots > 0)
+            {
+                FireVolley(now);
+                _pendingBurstShots--;
+                _nextBurstShotTime = now + GetBurstInterval();
+            }
         }
 
         private bool CanRun()
         {
-            if (!autoFireEnabled || projectileSystem == null || weaponDefinition == null || weaponDefinition.ProjectileDefinition == null)
+            if (!autoFireEnabled || projectileSystem == null || projectileSystem.TargetProvider == null || weaponDefinition == null || weaponDefinition.ProjectileDefinition == null)
             {
                 return false;
             }
@@ -244,7 +262,15 @@ namespace WaveGame.Combat.Projectiles
 
         private Vector3 GetForward()
         {
-            return combatSource != null ? combatSource.Forward : transform.forward;
+            var forward = combatSource != null ? combatSource.Forward : transform.forward;
+            forward.y = 0f;
+
+            if (forward.sqrMagnitude <= 0.0001f)
+            {
+                return Vector3.forward;
+            }
+
+            return forward.normalized;
         }
 
         private Vector3 ApplyPattern(Vector3 baseDirection, int index, int total, float now)
@@ -267,7 +293,8 @@ namespace WaveGame.Combat.Projectiles
                     return Quaternion.AngleAxis(_patternAngle, Vector3.up) * baseDirection;
                 case FirePatternType.Alternating:
                     _alternatingSide = !_alternatingSide;
-                    var sideAngle = _alternatingSide ? 10f : -10f;
+                    var alternatingAngle = Mathf.Max(0f, pattern.ConeAngleDeg > 0f ? pattern.ConeAngleDeg : pattern.LateralOffset * 20f);
+                    var sideAngle = _alternatingSide ? alternatingAngle : -alternatingAngle;
                     return Quaternion.AngleAxis(sideAngle, Vector3.up) * baseDirection;
                 default:
                     return baseDirection;

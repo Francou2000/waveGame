@@ -22,6 +22,11 @@ namespace WaveGame.Combat.Player
         [SerializeField] private PlayerInput playerInput;
         [SerializeField] private string moveActionName = "Move";
 
+        [Header("Input")]
+        [SerializeField] private InputActionReference moveAction;
+        [SerializeField] private PlayerInput playerInput;
+        [SerializeField] private string moveActionName = "Move";
+
         private CharacterController _controller;
         private float _verticalVelocity;
         private Vector3 _lastMoveDirection;
