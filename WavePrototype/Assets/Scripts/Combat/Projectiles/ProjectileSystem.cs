@@ -18,10 +18,14 @@ namespace WaveGame.Combat.Projectiles
         private HitResolver _hitResolver;
         private int _nextProjectileId;
         private int _physicsQueries;
+        private int _peakActiveProjectiles;
 
         public float TimeNow => Time.time;
         public HitRegistry HitRegistry { get; } = new();
         public IProjectileTargetProvider TargetProvider => _targetProvider;
+        public int ActiveProjectileCount => _active.Count;
+        public int PhysicsQueriesThisFrame => _physicsQueries;
+        public int PeakActiveProjectiles => _peakActiveProjectiles;
 
         private void Awake()
         {
@@ -75,6 +79,11 @@ namespace WaveGame.Combat.Projectiles
             }
 
             _active.Add(instance);
+            if (_active.Count > _peakActiveProjectiles)
+            {
+                _peakActiveProjectiles = _active.Count;
+            }
+
             return true;
         }
 
