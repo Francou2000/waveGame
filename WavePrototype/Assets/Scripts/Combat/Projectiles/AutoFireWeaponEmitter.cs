@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using WaveGame.Combat.Player;
 
 namespace WaveGame.Combat.Projectiles
@@ -18,7 +19,10 @@ namespace WaveGame.Combat.Projectiles
 
         [Header("Testing")]
         [SerializeField] private bool autoFireEnabled = true;
-        [SerializeField] private bool requireMouseHold;
+        [SerializeField] private bool requireAttackInput;
+
+        [Header("Input")]
+        [SerializeField] private InputActionReference attackAction;
 
         private int _cachedTargetId = -1;
         private float _nextRetargetTime;
@@ -64,7 +68,34 @@ namespace WaveGame.Combat.Projectiles
                 return false;
             }
 
-            return !requireMouseHold || Input.GetMouseButton(0);
+            return !requireAttackInput || IsAttackPressed();
+        }
+
+
+        private void OnEnable()
+        {
+            if (attackAction != null)
+            {
+                attackAction.action?.Enable();
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (attackAction != null)
+            {
+                attackAction.action?.Disable();
+            }
+        }
+
+        private bool IsAttackPressed()
+        {
+            if (attackAction == null || attackAction.action == null)
+            {
+                return false;
+            }
+
+            return attackAction.action.IsPressed();
         }
 
         private float GetFinalCooldown()

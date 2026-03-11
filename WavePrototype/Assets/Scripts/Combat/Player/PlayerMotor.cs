@@ -9,6 +9,8 @@ namespace WaveGame.Combat.Player
         [SerializeField] private PlayerStatsRuntime stats;
         [SerializeField] private float fallbackMoveSpeed = 6f;
         [SerializeField] private float gravity = -20f;
+        [Header("Input")]
+        [SerializeField] private InputActionReference moveAction;
 
         private CharacterController _controller;
         private float _verticalVelocity;
@@ -29,19 +31,7 @@ namespace WaveGame.Combat.Player
         private void Update()
         {
             float dt = Time.deltaTime;
-
-            Vector2 input = Vector2.zero;
-            Keyboard keyboard = Keyboard.current;
-
-            if (keyboard != null)
-            {
-                if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) input.x -= 1f;
-                if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) input.x += 1f;
-                if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed) input.y -= 1f;
-                if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed) input.y += 1f;
-            }
-
-            input = Vector2.ClampMagnitude(input, 1f);
+            Vector2 input = ReadMoveInput();
 
             _lastMoveDirection = new Vector3(input.x, 0f, input.y);
 
@@ -57,6 +47,32 @@ namespace WaveGame.Combat.Player
 
             Vector3 velocity = horizontal + Vector3.up * _verticalVelocity;
             _controller.Move(velocity * dt);
+        }
+
+        private void OnEnable()
+        {
+            if (moveAction != null)
+            {
+                moveAction.action?.Enable();
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (moveAction != null)
+            {
+                moveAction.action?.Disable();
+            }
+        }
+
+        private Vector2 ReadMoveInput()
+        {
+            if (moveAction != null && moveAction.action != null)
+            {
+                return Vector2.ClampMagnitude(moveAction.action.ReadValue<Vector2>(), 1f);
+            }
+
+            return Vector2.zero;
         }
     }
 }
