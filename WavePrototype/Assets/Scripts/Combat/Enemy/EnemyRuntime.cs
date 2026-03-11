@@ -26,6 +26,7 @@ namespace WaveGame.Combat.Enemy
         public Vector3 Position => transform.position;
         public float MoveSpeed => moveSpeed;
         public EnemyCategory Category => definition != null ? definition.Category : EnemyCategory.Minion;
+        public EnemyDefinitionSO Definition => definition;
 
         public void SetDefinition(EnemyDefinitionSO enemyDefinition)
         {
