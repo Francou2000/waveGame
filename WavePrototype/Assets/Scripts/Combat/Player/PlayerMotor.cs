@@ -12,9 +12,15 @@ namespace WaveGame.Combat.Player
         [Header("Input")]
         [SerializeField] private InputActionReference moveAction;
 
+        [Header("Input")]
+        [SerializeField] private InputActionReference moveAction;
+        [SerializeField] private PlayerInput playerInput;
+        [SerializeField] private string moveActionName = "Move";
+
         private CharacterController _controller;
         private float _verticalVelocity;
         private Vector3 _lastMoveDirection;
+        private InputAction _resolvedMoveAction;
 
         public Vector3 LastMoveDirection => _lastMoveDirection;
 
@@ -25,6 +31,31 @@ namespace WaveGame.Combat.Player
             if (stats == null)
             {
                 stats = GetComponent<PlayerStatsRuntime>();
+            }
+
+            if (playerInput == null)
+            {
+                playerInput = GetComponent<PlayerInput>();
+            }
+
+            ResolveMoveAction();
+        }
+
+        private void OnEnable()
+        {
+            ResolveMoveAction();
+
+            if (moveAction != null)
+            {
+                _resolvedMoveAction?.Enable();
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (moveAction != null)
+            {
+                _resolvedMoveAction?.Disable();
             }
         }
 
@@ -49,30 +80,29 @@ namespace WaveGame.Combat.Player
             _controller.Move(velocity * dt);
         }
 
-        private void OnEnable()
-        {
-            if (moveAction != null)
-            {
-                moveAction.action?.Enable();
-            }
-        }
-
-        private void OnDisable()
-        {
-            if (moveAction != null)
-            {
-                moveAction.action?.Disable();
-            }
-        }
-
         private Vector2 ReadMoveInput()
         {
-            if (moveAction != null && moveAction.action != null)
+            if (_resolvedMoveAction == null)
             {
-                return Vector2.ClampMagnitude(moveAction.action.ReadValue<Vector2>(), 1f);
+                ResolveMoveAction();
             }
 
-            return Vector2.zero;
+            if (_resolvedMoveAction == null)
+            {
+                return Vector2.zero;
+            }
+
+            return Vector2.ClampMagnitude(_resolvedMoveAction.ReadValue<Vector2>(), 1f);
+        }
+
+        private void ResolveMoveAction()
+        {
+            _resolvedMoveAction = moveAction != null ? moveAction.action : null;
+
+            if (_resolvedMoveAction == null && playerInput != null && playerInput.actions != null && !string.IsNullOrWhiteSpace(moveActionName))
+            {
+                _resolvedMoveAction = playerInput.actions.FindAction(moveActionName, false);
+            }
         }
     }
 }
