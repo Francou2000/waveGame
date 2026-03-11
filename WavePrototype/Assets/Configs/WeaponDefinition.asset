@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1c08703a6160e742bf30b7e612aef70, type: 3}
+  m_Name: WeaponDefinition
+  m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Projectiles.WeaponDefinition
+  BaseCooldown: 0.8
+  FirePattern: {fileID: 0}
+  Targeting: {fileID: 0}
+  ProjectileDefinition: {fileID: 0}
+  ProjectilesPerShot: 1
+  Range: 18
+  RequiresLineOfSight: 0
+  MuzzleLocalOffset: {x: 0, y: 1, z: 0.8}
+  FireSfxId: 
+  MuzzleVfxId: 
