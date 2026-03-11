@@ -64,7 +64,7 @@ namespace WaveGame.Combat.Projectiles
                 return false;
             }
 
-            return !requireMouseHold || Input.GetMouseButton(0);
+            return !requireMouseHold || PlayerInputReader.IsPrimaryFireHeld();
         }
 
         private float GetFinalCooldown()

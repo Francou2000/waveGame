@@ -1,10 +1,15 @@
 using UnityEngine;
+using WaveGame.Meta.Definitions;
 
 namespace WaveGame.Combat.Projectiles
 {
     [CreateAssetMenu(menuName = "WaveGame/Combat/Weapon Definition", fileName = "WeaponDefinition")]
-    public sealed class WeaponDefinition : ScriptableObject
+    public sealed class WeaponDefinition : ScriptableObject, IContentDefinition
     {
+        [Header("Identity")]
+        [SerializeField] private string contentId = "weapon.base";
+        [SerializeField] private ContentRarity rarity = ContentRarity.Common;
+
         [Header("Cadence")]
         [Min(0.01f)] public float BaseCooldown = 0.8f;
 
@@ -22,5 +27,8 @@ namespace WaveGame.Combat.Projectiles
         [Header("Presentation IDs")]
         public string FireSfxId;
         public string MuzzleVfxId;
+
+        public string ContentId => contentId;
+        public ContentRarity Rarity => rarity;
     }
 }

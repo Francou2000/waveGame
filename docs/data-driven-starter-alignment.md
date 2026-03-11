@@ -44,3 +44,8 @@ Se revisó el repositorio contra el spec de Auto-Fire + Projectiles + Targeting 
 ## Enemy system additions
 - `EnemyDefinitionSO`, `EnemyDropTableSO`, `EnemyVisualSetSO`, `BossPhaseProfileSO`, `BossLootSO`.
 - `EnemyDeathSystem` + `XpOrbSystem` + `XpOrbRuntime` con pooling y merge on spawn.
+
+
+## Meta progression base
+- `ContentCatalogSO`, `PassiveDefinitionSO`, `AbilityDefinitionSO`, `EvolutionRecipeSO`, `UnlockConditionSO`, `ItemRarityProfileSO`.
+- `MetaProgressionSaveData` + `MetaProgressionSaveStore` + `MetaProgressionManager` + `RunSessionState`.

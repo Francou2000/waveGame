@@ -1,4 +1,5 @@
 using UnityEngine;
+using WaveGame.Combat.Player;
 
 namespace WaveGame.Combat.Projectiles
 {
@@ -31,6 +32,13 @@ namespace WaveGame.Combat.Projectiles
         {
             _characterController = GetComponent<CharacterController>();
 
+            if (TryGetComponent<WaveGame.Combat.Player.PlayerMotor>(out _))
+            {
+                Debug.LogWarning("BasicPlayerController disabled because PlayerMotor is present on the same GameObject.", this);
+                enabled = false;
+                return;
+            }
+
             if (cameraTransform == null && Camera.main != null)
             {
                 cameraTransform = Camera.main.transform;
@@ -46,8 +54,7 @@ namespace WaveGame.Combat.Projectiles
 
         private void HandleMovement(float dt)
         {
-            var input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            input = Vector2.ClampMagnitude(input, 1f);
+            var input = PlayerInputReader.GetMoveInput();
 
             var moveDirection = GetMoveDirectionOnPlane(input);
             var horizontalVelocity = moveDirection * moveSpeed;
@@ -93,7 +100,7 @@ namespace WaveGame.Combat.Projectiles
                 return;
             }
 
-            if (!Input.GetMouseButton(0))
+            if (!PlayerInputReader.IsPrimaryFireHeld())
             {
                 return;
             }

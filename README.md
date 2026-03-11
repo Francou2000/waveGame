@@ -8,6 +8,7 @@
 - Data-driven starter alignment: `docs/data-driven-starter-alignment.md`
 - Controladores Player/Enemy (milestone): `docs/controladores-player-enemigos-techdoc.md`
 - Enemy System (Stats/Death/XP/Boss base): `docs/enemy-system-stats-death-xp-techdoc.md`
+- Meta Progression (Unlocks persistentes): `docs/meta-progression-unlocks-techdoc.md`
 
 ## Unity implementation
 

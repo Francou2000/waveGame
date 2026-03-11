@@ -27,8 +27,7 @@ namespace WaveGame.Combat.Player
         private void Update()
         {
             var dt = Time.deltaTime;
-            var input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            input = Vector2.ClampMagnitude(input, 1f);
+            var input = PlayerInputReader.GetMoveInput();
 
             _lastMoveDirection = new Vector3(input.x, 0f, input.y);
             var speed = stats != null ? stats.MoveSpeed : fallbackMoveSpeed;
