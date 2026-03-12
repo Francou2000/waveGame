@@ -37,6 +37,9 @@ namespace WaveGame.Combat.Enemy
         [Header("Visuals")]
         public EnemyVisualSetSO VisualSet;
 
+        [Header("Movement")]
+        public EnemyMovementProfileSO MovementProfile;
+
         [Header("Drops")]
         public EnemyDropTableSO DropTable;
         public bool DropOnDeath = true;
