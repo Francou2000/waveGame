@@ -32,6 +32,15 @@ namespace WaveGame.Combat.Player
         [SerializeField] private PlayerInput playerInput;
         [SerializeField] private string moveActionName = "Move";
 
+        [Header("Input")]
+        [SerializeField] private InputActionReference moveAction;
+        [SerializeField] private PlayerInput playerInput;
+        [SerializeField] private string moveActionName = "Move";
+
+        [Header("Movement Space")]
+        [SerializeField] private bool moveRelativeToTransform = true;
+        [SerializeField] private Transform movementReference;
+
         private CharacterController _controller;
         private float _verticalVelocity;
         private Vector3 _lastMoveDirection;
@@ -53,11 +62,13 @@ namespace WaveGame.Combat.Player
                 playerInput = GetComponent<PlayerInput>();
             }
 
+            ResolveMovementReference();
             ResolveMoveAction();
         }
 
         private void OnEnable()
         {
+            ResolveMovementReference();
             ResolveMoveAction();
 
             if (moveAction != null)
@@ -76,13 +87,13 @@ namespace WaveGame.Combat.Player
 
         private void Update()
         {
-            float dt = Time.deltaTime;
-            Vector2 input = ReadMoveInput();
+            var dt = Time.deltaTime;
+            var input = ReadMoveInput();
 
-            _lastMoveDirection = new Vector3(input.x, 0f, input.y);
+            _lastMoveDirection = ResolveMoveDirection(input);
 
-            float speed = stats != null ? stats.MoveSpeed : fallbackMoveSpeed;
-            Vector3 horizontal = _lastMoveDirection * speed;
+            var speed = stats != null ? stats.MoveSpeed : fallbackMoveSpeed;
+            var horizontal = _lastMoveDirection * speed;
 
             if (_controller.isGrounded && _verticalVelocity < 0f)
             {
@@ -91,7 +102,7 @@ namespace WaveGame.Combat.Player
 
             _verticalVelocity += gravity * dt;
 
-            Vector3 velocity = horizontal + Vector3.up * _verticalVelocity;
+            var velocity = horizontal + Vector3.up * _verticalVelocity;
             _controller.Move(velocity * dt);
         }
 
@@ -108,6 +119,38 @@ namespace WaveGame.Combat.Player
             }
 
             return Vector2.ClampMagnitude(_resolvedMoveAction.ReadValue<Vector2>(), 1f);
+        }
+
+        private Vector3 ResolveMoveDirection(Vector2 input)
+        {
+            var move = new Vector3(input.x, 0f, input.y);
+            if (!moveRelativeToTransform || movementReference == null)
+            {
+                return move;
+            }
+
+            var forward = movementReference.forward;
+            var right = movementReference.right;
+            forward.y = 0f;
+            right.y = 0f;
+
+            if (forward.sqrMagnitude <= 0.0001f || right.sqrMagnitude <= 0.0001f)
+            {
+                return move;
+            }
+
+            forward.Normalize();
+            right.Normalize();
+
+            return right * input.x + forward * input.y;
+        }
+
+        private void ResolveMovementReference()
+        {
+            if (movementReference == null && Camera.main != null)
+            {
+                movementReference = Camera.main.transform;
+            }
         }
 
         private void ResolveMoveAction()
