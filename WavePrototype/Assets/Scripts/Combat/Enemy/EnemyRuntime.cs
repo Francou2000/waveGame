@@ -14,8 +14,17 @@ namespace WaveGame.Combat.Enemy
         [SerializeField] private float aimPointHeightOffset = 1f;
         [SerializeField] private Renderer visualRenderer;
 
+        [Header("Hit Feedback")]
+        [SerializeField] private bool enableHitFlash = true;
+        [SerializeField] private Color hitFlashColor = new(1f, 0.35f, 0.35f, 1f);
+        [SerializeField, Min(0.02f)] private float hitFlashDuration = 0.08f;
+        [SerializeField, Range(1f, 1.5f)] private float hitPunchScale = 1.06f;
+
         private float _currentHealth;
         private bool _isDying;
+        private float _flashTimer;
+        private Color _baseColor = Color.white;
+        private Vector3 _baseScale = Vector3.one;
 
         public event Action<EnemyRuntime> Died;
         public event Action<EnemyRuntime> DeathRequested;
@@ -26,6 +35,7 @@ namespace WaveGame.Combat.Enemy
         public Vector3 Position => transform.position;
         public float MoveSpeed => moveSpeed;
         public EnemyCategory Category => definition != null ? definition.Category : EnemyCategory.Minion;
+        public EnemyDefinitionSO Definition => definition;
 
         public void SetDefinition(EnemyDefinitionSO enemyDefinition)
         {
@@ -39,6 +49,7 @@ namespace WaveGame.Combat.Enemy
             moveSpeed = definition.MoveSpeed;
             aimPointHeightOffset = definition.AimPointOffset;
             transform.localScale = definition.ModelScale;
+            _baseScale = transform.localScale;
         }
 
         public void Activate(Vector3 position)
@@ -52,6 +63,7 @@ namespace WaveGame.Combat.Enemy
             transform.position = position;
             _currentHealth = maxHealth;
             _isDying = false;
+            _flashTimer = 0f;
             gameObject.SetActive(true);
         }
 
@@ -63,6 +75,34 @@ namespace WaveGame.Combat.Enemy
             }
 
             _isDying = false;
+            _flashTimer = 0f;
+        }
+
+        private void Update()
+        {
+            if (_flashTimer <= 0f)
+            {
+                return;
+            }
+
+            _flashTimer -= Time.deltaTime;
+            var t = Mathf.Clamp01(_flashTimer / Mathf.Max(0.001f, hitFlashDuration));
+            if (visualRenderer != null)
+            {
+                visualRenderer.material.color = Color.Lerp(_baseColor, hitFlashColor, t);
+            }
+
+            transform.localScale = Vector3.Lerp(_baseScale, _baseScale * hitPunchScale, t);
+
+            if (_flashTimer <= 0f)
+            {
+                if (visualRenderer != null)
+                {
+                    visualRenderer.material.color = _baseColor;
+                }
+
+                transform.localScale = _baseScale;
+            }
         }
 
         public Vector3 GetAimPoint()
@@ -80,6 +120,9 @@ namespace WaveGame.Combat.Enemy
             var reduction = definition != null ? definition.DamageReduction : 0f;
             var finalDamage = damageEvent.Amount * (1f - Mathf.Clamp01(reduction));
             _currentHealth -= finalDamage;
+
+            TriggerHitFeedback();
+
             if (_currentHealth > 0f)
             {
                 return;
@@ -129,6 +172,16 @@ namespace WaveGame.Combat.Enemy
             gameObject.SetActive(false);
         }
 
+        private void TriggerHitFeedback()
+        {
+            if (!enableHitFlash)
+            {
+                return;
+            }
+
+            _flashTimer = hitFlashDuration;
+        }
+
         private void ApplyVisualVariant()
         {
             if (definition == null || definition.VisualSet == null || visualRenderer == null)
@@ -144,7 +197,9 @@ namespace WaveGame.Combat.Enemy
             }
 
             visualRenderer.material.color = visualSet.PickTint();
+            _baseColor = visualRenderer.material.color;
             transform.localScale = definition.ModelScale * visualSet.PickScaleMultiplier();
+            _baseScale = transform.localScale;
         }
     }
 }

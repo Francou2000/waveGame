@@ -11,8 +11,13 @@ namespace WaveGame.Combat.Enemy
         [SerializeField] private EnemyDeathSystem deathSystem;
         [SerializeField] private int initialPoolSize = 64;
         [SerializeField] private int maxAlive = 400;
-        [SerializeField] private float spawnPerSecond = 20f;
+        [SerializeField] private float spawnPerSecond = 8f;
         [SerializeField] private float spawnRadius = 22f;
+        [SerializeField, Min(1)] private int maxSpawnsPerFrame = 3;
+        [Header("Player Safety")]
+        [SerializeField] private Transform playerTransform;
+        [SerializeField, Min(0f)] private float minSpawnDistanceFromPlayer = 10f;
+        [SerializeField, Min(1)] private int maxSpawnPositionAttempts = 8;
 
         private readonly Queue<EnemyRuntime> _pool = new();
         private readonly HashSet<EnemyRuntime> _alive = new();
@@ -32,6 +37,15 @@ namespace WaveGame.Combat.Enemy
                 return;
             }
 
+            if (playerTransform == null)
+            {
+                var anchor = FindFirstObjectByType<WaveGame.Combat.Player.PlayerCombatAnchorProvider>();
+                if (anchor != null)
+                {
+                    playerTransform = anchor.CombatAnchor;
+                }
+            }
+
             WarmPool(Mathf.Max(1, initialPoolSize));
         }
 
@@ -44,10 +58,13 @@ namespace WaveGame.Combat.Enemy
 
             _spawnBudget += spawnPerSecond * Time.deltaTime;
             var allowedAlive = Mathf.Max(1, maxAlive);
-            while (_spawnBudget >= 1f && _alive.Count < allowedAlive)
+            var frameSpawnCount = 0;
+            var maxSpawnThisFrame = Mathf.Max(1, maxSpawnsPerFrame);
+            while (_spawnBudget >= 1f && _alive.Count < allowedAlive && frameSpawnCount < maxSpawnThisFrame)
             {
                 _spawnBudget -= 1f;
                 SpawnOne();
+                frameSpawnCount++;
             }
         }
 
@@ -76,12 +93,47 @@ namespace WaveGame.Combat.Enemy
             }
 
             var enemy = _pool.Dequeue();
-            var spawnPosition = transform.position + Random.onUnitSphere * spawnRadius;
-            spawnPosition.y = transform.position.y;
+            var spawnPosition = FindSpawnPosition();
 
             enemy.Activate(spawnPosition);
             _alive.Add(enemy);
             enemySystem.Register(enemy);
+        }
+
+        private Vector3 FindSpawnPosition()
+        {
+            var attempts = Mathf.Max(1, maxSpawnPositionAttempts);
+            var fallback = ComputeSpawnPosition();
+            if (playerTransform == null || minSpawnDistanceFromPlayer <= 0f)
+            {
+                return fallback;
+            }
+
+            var minDistanceSqr = minSpawnDistanceFromPlayer * minSpawnDistanceFromPlayer;
+            for (var i = 0; i < attempts; i++)
+            {
+                var candidate = ComputeSpawnPosition();
+                if ((candidate - playerTransform.position).sqrMagnitude >= minDistanceSqr)
+                {
+                    return candidate;
+                }
+            }
+
+            return fallback;
+        }
+
+        private Vector3 ComputeSpawnPosition()
+        {
+            var ringDirection = Random.insideUnitCircle;
+            if (ringDirection.sqrMagnitude <= 0.0001f)
+            {
+                ringDirection = Vector2.right;
+            }
+
+            ringDirection.Normalize();
+            var spawnPosition = transform.position + new Vector3(ringDirection.x, 0f, ringDirection.y) * spawnRadius;
+            spawnPosition.y = transform.position.y;
+            return spawnPosition;
         }
 
         private void OnEnemyDied(EnemyRuntime enemy)
