@@ -27,7 +27,8 @@ MonoBehaviour:
   ModelScale: {x: 1, y: 1, z: 1}
   AimPointOffset: 1
   VisualSet: {fileID: 0}
-  DropTable: {fileID: 0}
+  MovementProfile: {fileID: 11400000, guid: 87648cdd09e9a414e847a4e616444395, type: 2}
+  DropTable: {fileID: 11400000, guid: dfa7a36c702c4ef479e16e3d307cf615, type: 2}
   DropOnDeath: 1
   BossPhaseProfile: {fileID: 0}
   BossLoot: {fileID: 0}
