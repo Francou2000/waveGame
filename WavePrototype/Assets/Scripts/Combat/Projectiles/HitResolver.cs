@@ -12,21 +12,25 @@ namespace WaveGame.Combat.Projectiles
             _targetProvider = targetProvider;
         }
 
-        public void Resolve(in HitEvent hitEvent)
+        public bool Resolve(in HitEvent hitEvent, out float resolvedDamage, out bool isCritical)
         {
+            resolvedDamage = 0f;
+            isCritical = false;
+
             if (!_targetProvider.TryGetTarget(hitEvent.TargetId, out IDamageable target) || !target.IsAlive)
             {
-                return;
+                return false;
             }
 
-            var isCritical = hitEvent.CritCandidate && Random.value <= hitEvent.CritChance;
-            var damage = hitEvent.BaseDamage * hitEvent.DamageScale;
+            isCritical = hitEvent.CritCandidate && Random.value <= hitEvent.CritChance;
+            resolvedDamage = hitEvent.BaseDamage * hitEvent.DamageScale;
             if (isCritical)
             {
-                damage *= hitEvent.CritMultiplier;
+                resolvedDamage *= hitEvent.CritMultiplier;
             }
 
-            target.ApplyDamage(new DamageEvent(damage, hitEvent.DamageType, hitEvent.OwnerId, isCritical, hitEvent.KnockbackForce, hitEvent.HitPoint, hitEvent.HitNormal));
+            target.ApplyDamage(new DamageEvent(resolvedDamage, hitEvent.DamageType, hitEvent.OwnerId, isCritical, hitEvent.KnockbackForce, hitEvent.HitPoint, hitEvent.HitNormal));
+            return true;
         }
     }
 }

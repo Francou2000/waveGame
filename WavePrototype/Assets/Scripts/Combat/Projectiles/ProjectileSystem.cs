@@ -13,10 +13,24 @@ namespace WaveGame.Combat.Projectiles
         [Header("Debug Visuals")]
         [SerializeField] private GameObject projectileVisualPrefab;
 
+        [Header("Gameplay Feedback")]
+        [SerializeField] private GameObject impactVfxPrefab;
+        [SerializeField, Min(0.05f)] private float impactVfxLifetime = 0.5f;
+        [SerializeField] private GameObject damagePopupPrefab;
+        [SerializeField, Min(0.05f)] private float damagePopupLifetime = 0.6f;
+
+        private struct ActiveFx
+        {
+            public GameObject Instance;
+            public float DespawnTime;
+        }
+
         private readonly List<ProjectileInstance> _active = new(1024);
         private readonly Queue<HitEvent> _hitQueue = new(512);
         private readonly Dictionary<ProjectileArchetypeType, IProjectileArchetype> _archetypes = new();
         private readonly Dictionary<int, Transform> _visualByProjectileId = new();
+        private readonly List<ActiveFx> _activeImpactVfx = new(256);
+        private readonly List<ActiveFx> _activeDamagePopups = new(128);
 
         private ProjectilePhysicsTargetProvider _targetProvider;
         private HitResolver _hitResolver;
@@ -51,6 +65,7 @@ namespace WaveGame.Combat.Projectiles
             _physicsQueries = 0;
             SimulateProjectiles(Time.deltaTime);
             ResolveHits();
+            UpdateFeedbackFx();
         }
 
         public bool TrySpawn(in ProjectileSpawnContext spawn)
@@ -63,7 +78,7 @@ namespace WaveGame.Combat.Projectiles
             var maxActive = globalConfig != null ? globalConfig.MaxActiveProjectiles : 1024;
             if (_active.Count >= maxActive)
             {
-                _active.RemoveAt(0);
+                RecycleAt(0, _active[0].InstanceId);
             }
 
             var instance = ProjectileInstance.Create(++_nextProjectileId, spawn.Definition, spawn.OwnerEntityId, spawn.TeamId, spawn.Position, spawn.Direction);
@@ -126,7 +141,13 @@ namespace WaveGame.Combat.Projectiles
         {
             while (_hitQueue.Count > 0)
             {
-                _hitResolver.Resolve(_hitQueue.Dequeue());
+                var hitEvent = _hitQueue.Dequeue();
+                SpawnImpactFx(hitEvent.HitPoint, hitEvent.HitNormal);
+
+                if (_hitResolver.Resolve(hitEvent, out var resolvedDamage, out var isCritical))
+                {
+                    SpawnDamagePopup(hitEvent.HitPoint, resolvedDamage, isCritical);
+                }
             }
         }
 
@@ -178,6 +199,79 @@ namespace WaveGame.Combat.Projectiles
             }
         }
 
+        private void SpawnImpactFx(Vector3 position, Vector3 normal)
+        {
+            if (impactVfxPrefab == null)
+            {
+                return;
+            }
+
+            var maxImpact = globalConfig != null ? globalConfig.MaxActiveImpactVfx : 256;
+            EnsureFxCapacity(_activeImpactVfx, Mathf.Max(1, maxImpact));
+
+            var up = normal.sqrMagnitude > 0.0001f ? normal.normalized : Vector3.up;
+            var rot = Quaternion.LookRotation(up);
+            var go = Instantiate(impactVfxPrefab, position, rot, transform);
+            _activeImpactVfx.Add(new ActiveFx { Instance = go, DespawnTime = Time.time + impactVfxLifetime });
+        }
+
+        private void SpawnDamagePopup(Vector3 position, float damage, bool isCritical)
+        {
+            if (damagePopupPrefab == null)
+            {
+                return;
+            }
+
+            var maxPopups = globalConfig != null ? globalConfig.MaxActiveDamagePopups : 128;
+            EnsureFxCapacity(_activeDamagePopups, Mathf.Max(1, maxPopups));
+
+            var popupPos = position + Vector3.up * 0.25f;
+            var go = Instantiate(damagePopupPrefab, popupPos, Quaternion.identity, transform);
+            var scale = isCritical ? 1.35f : 1f;
+            go.transform.localScale *= scale;
+            _activeDamagePopups.Add(new ActiveFx { Instance = go, DespawnTime = Time.time + damagePopupLifetime });
+        }
+
+        private static void EnsureFxCapacity(List<ActiveFx> list, int max)
+        {
+            if (list.Count < max)
+            {
+                return;
+            }
+
+            var first = list[0];
+            if (first.Instance != null)
+            {
+                Object.Destroy(first.Instance);
+            }
+
+            list.RemoveAt(0);
+        }
+
+        private void UpdateFeedbackFx()
+        {
+            CleanupFxList(_activeImpactVfx);
+            CleanupFxList(_activeDamagePopups);
+        }
+
+        private static void CleanupFxList(List<ActiveFx> list)
+        {
+            var now = Time.time;
+            for (var i = list.Count - 1; i >= 0; i--)
+            {
+                var fx = list[i];
+                if (fx.Instance == null || now >= fx.DespawnTime)
+                {
+                    if (fx.Instance != null)
+                    {
+                        Object.Destroy(fx.Instance);
+                    }
+
+                    list.RemoveAt(i);
+                }
+            }
+        }
+
         public int SphereCastNonAlloc(Vector3 origin, float radius, Vector3 direction, RaycastHit[] hits, float maxDistance, LayerMask layerMask)
         {
             if (!HasQueryBudget())
@@ -221,6 +315,21 @@ namespace WaveGame.Combat.Projectiles
             }
 
             _visualByProjectileId.Clear();
+            ForceCleanupFx(_activeImpactVfx);
+            ForceCleanupFx(_activeDamagePopups);
+        }
+
+        private static void ForceCleanupFx(List<ActiveFx> list)
+        {
+            for (var i = list.Count - 1; i >= 0; i--)
+            {
+                if (list[i].Instance != null)
+                {
+                    Object.Destroy(list[i].Instance);
+                }
+            }
+
+            list.Clear();
         }
 
         public void RegisterTarget(IDamageable target)
