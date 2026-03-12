@@ -10,18 +10,26 @@ namespace WaveGame.Combat.Projectiles
         [SerializeField] private ProjectileGlobalConfig globalConfig;
         [SerializeField] private LayerMask enemyMask;
 
+        [Header("Debug Visuals")]
+        [SerializeField] private GameObject projectileVisualPrefab;
+
         private readonly List<ProjectileInstance> _active = new(1024);
         private readonly Queue<HitEvent> _hitQueue = new(512);
         private readonly Dictionary<ProjectileArchetypeType, IProjectileArchetype> _archetypes = new();
+        private readonly Dictionary<int, Transform> _visualByProjectileId = new();
 
         private ProjectilePhysicsTargetProvider _targetProvider;
         private HitResolver _hitResolver;
         private int _nextProjectileId;
         private int _physicsQueries;
+        private int _peakActiveProjectiles;
 
         public float TimeNow => Time.time;
         public HitRegistry HitRegistry { get; } = new();
         public IProjectileTargetProvider TargetProvider => _targetProvider;
+        public int ActiveProjectileCount => _active.Count;
+        public int PhysicsQueriesThisFrame => _physicsQueries;
+        public int PeakActiveProjectiles => _peakActiveProjectiles;
 
         private void Awake()
         {
@@ -75,6 +83,12 @@ namespace WaveGame.Combat.Projectiles
             }
 
             _active.Add(instance);
+            if (_active.Count > _peakActiveProjectiles)
+            {
+                _peakActiveProjectiles = _active.Count;
+            }
+
+            CreateVisualFor(instance);
             return true;
         }
 
@@ -99,6 +113,7 @@ namespace WaveGame.Combat.Projectiles
 
                 archetype.Simulate(ref projectile, dt, this);
                 _active[i] = projectile;
+                SyncVisual(projectile);
 
                 if (projectile.IsFinished)
                 {
@@ -118,7 +133,49 @@ namespace WaveGame.Combat.Projectiles
         private void RecycleAt(int index, int projectileId)
         {
             HitRegistry.ForgetProjectile(projectileId);
+            DestroyVisual(projectileId);
             _active.RemoveAt(index);
+        }
+
+        private void CreateVisualFor(in ProjectileInstance instance)
+        {
+            if (projectileVisualPrefab == null)
+            {
+                return;
+            }
+
+            var direction = instance.Direction.sqrMagnitude > 0.0001f ? instance.Direction : Vector3.forward;
+            var rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+            var visual = Instantiate(projectileVisualPrefab, instance.Position, rotation, transform);
+            _visualByProjectileId[instance.InstanceId] = visual.transform;
+        }
+
+        private void SyncVisual(in ProjectileInstance instance)
+        {
+            if (!_visualByProjectileId.TryGetValue(instance.InstanceId, out var visual) || visual == null)
+            {
+                return;
+            }
+
+            visual.position = instance.Position;
+            if (instance.Direction.sqrMagnitude > 0.0001f)
+            {
+                visual.rotation = Quaternion.LookRotation(instance.Direction.normalized, Vector3.up);
+            }
+        }
+
+        private void DestroyVisual(int projectileId)
+        {
+            if (!_visualByProjectileId.TryGetValue(projectileId, out var visual))
+            {
+                return;
+            }
+
+            _visualByProjectileId.Remove(projectileId);
+            if (visual != null)
+            {
+                Destroy(visual.gameObject);
+            }
         }
 
         public int SphereCastNonAlloc(Vector3 origin, float radius, Vector3 direction, RaycastHit[] hits, float maxDistance, LayerMask layerMask)
@@ -151,6 +208,19 @@ namespace WaveGame.Combat.Projectiles
             }
 
             return _physicsQueries < globalConfig.MaxPhysicsQueriesPerFrame;
+        }
+
+        private void OnDisable()
+        {
+            foreach (var pair in _visualByProjectileId)
+            {
+                if (pair.Value != null)
+                {
+                    Destroy(pair.Value.gameObject);
+                }
+            }
+
+            _visualByProjectileId.Clear();
         }
 
         public void RegisterTarget(IDamageable target)

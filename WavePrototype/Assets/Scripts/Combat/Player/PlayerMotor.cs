@@ -10,9 +10,19 @@ namespace WaveGame.Combat.Player
         [SerializeField] private float fallbackMoveSpeed = 6f;
         [SerializeField] private float gravity = -20f;
 
+        [Header("Input")]
+        [SerializeField] private InputActionReference moveAction;
+        [SerializeField] private PlayerInput playerInput;
+        [SerializeField] private string moveActionName = "Move";
+
+        [Header("Movement Space")]
+        [SerializeField] private bool moveRelativeToTransform = true;
+        [SerializeField] private Transform movementReference;
+
         private CharacterController _controller;
         private float _verticalVelocity;
         private Vector3 _lastMoveDirection;
+        private InputAction _resolvedMoveAction;
 
         public Vector3 LastMoveDirection => _lastMoveDirection;
 
@@ -24,29 +34,44 @@ namespace WaveGame.Combat.Player
             {
                 stats = GetComponent<PlayerStatsRuntime>();
             }
+
+            if (playerInput == null)
+            {
+                playerInput = GetComponent<PlayerInput>();
+            }
+
+            ResolveMovementReference();
+            ResolveMoveAction();
+        }
+
+        private void OnEnable()
+        {
+            ResolveMovementReference();
+            ResolveMoveAction();
+
+            if (moveAction != null)
+            {
+                _resolvedMoveAction?.Enable();
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (moveAction != null)
+            {
+                _resolvedMoveAction?.Disable();
+            }
         }
 
         private void Update()
         {
-            float dt = Time.deltaTime;
+            var dt = Time.deltaTime;
+            var input = ReadMoveInput();
 
-            Vector2 input = Vector2.zero;
-            Keyboard keyboard = Keyboard.current;
+            _lastMoveDirection = ResolveMoveDirection(input);
 
-            if (keyboard != null)
-            {
-                if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) input.x -= 1f;
-                if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) input.x += 1f;
-                if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed) input.y -= 1f;
-                if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed) input.y += 1f;
-            }
-
-            input = Vector2.ClampMagnitude(input, 1f);
-
-            _lastMoveDirection = new Vector3(input.x, 0f, input.y);
-
-            float speed = stats != null ? stats.MoveSpeed : fallbackMoveSpeed;
-            Vector3 horizontal = _lastMoveDirection * speed;
+            var speed = stats != null ? stats.MoveSpeed : fallbackMoveSpeed;
+            var horizontal = _lastMoveDirection * speed;
 
             if (_controller.isGrounded && _verticalVelocity < 0f)
             {
@@ -55,8 +80,65 @@ namespace WaveGame.Combat.Player
 
             _verticalVelocity += gravity * dt;
 
-            Vector3 velocity = horizontal + Vector3.up * _verticalVelocity;
+            var velocity = horizontal + Vector3.up * _verticalVelocity;
             _controller.Move(velocity * dt);
+        }
+
+        private Vector2 ReadMoveInput()
+        {
+            if (_resolvedMoveAction == null)
+            {
+                ResolveMoveAction();
+            }
+
+            if (_resolvedMoveAction == null)
+            {
+                return Vector2.zero;
+            }
+
+            return Vector2.ClampMagnitude(_resolvedMoveAction.ReadValue<Vector2>(), 1f);
+        }
+
+        private Vector3 ResolveMoveDirection(Vector2 input)
+        {
+            var move = new Vector3(input.x, 0f, input.y);
+            if (!moveRelativeToTransform || movementReference == null)
+            {
+                return move;
+            }
+
+            var forward = movementReference.forward;
+            var right = movementReference.right;
+            forward.y = 0f;
+            right.y = 0f;
+
+            if (forward.sqrMagnitude <= 0.0001f || right.sqrMagnitude <= 0.0001f)
+            {
+                return move;
+            }
+
+            forward.Normalize();
+            right.Normalize();
+
+            return right * input.x + forward * input.y;
+        }
+
+        private void ResolveMovementReference()
+        {
+            if (movementReference == null && Camera.main != null)
+            {
+                movementReference = Camera.main.transform;
+            }
+        }
+
+        private void ResolveMoveAction()
+        {
+            _resolvedMoveAction = moveAction != null ? moveAction.action : null;
+
+            if (_resolvedMoveAction == null && playerInput != null && playerInput.actions != null && !string.IsNullOrWhiteSpace(moveActionName))
+            {
+                _resolvedMoveAction = playerInput.actions.FindAction(moveActionName, false);
+            }
         }
     }
 }
