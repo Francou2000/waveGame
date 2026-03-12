@@ -31,6 +31,98 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3991722537724874667}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3022783540954215017
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2246429853303389081}
+  - component: {fileID: 1987649455779811271}
+  - component: {fileID: 6734513116800943163}
+  m_Layer: 0
+  m_Name: Main Camera
+  m_TagString: MainCamera
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2246429853303389081
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3022783540954215017}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.117326885, y: -0, z: -0, w: 0.9930934}
+  m_LocalPosition: {x: -0.29999924, y: 1.22, z: -4.86}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3991722537724874667}
+  m_LocalEulerAnglesHint: {x: 13.476, y: 0, z: 0}
+--- !u!20 &1987649455779811271
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3022783540954215017}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 50
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: -1
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!81 &6734513116800943163
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3022783540954215017}
+  m_Enabled: 1
 --- !u!1 &4916401883085894400
 GameObject:
   m_ObjectHideFlags: 0
@@ -48,6 +140,7 @@ GameObject:
   - component: {fileID: 323118332824972284}
   - component: {fileID: 8628801477834157803}
   - component: {fileID: 5771641432578904505}
+  - component: {fileID: 8796187475808654934}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -64,11 +157,12 @@ Transform:
   m_GameObject: {fileID: 4916401883085894400}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 1.21, z: -0}
+  m_LocalPosition: {x: -16.57, y: 0.75, z: -5.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7230823970145521212}
+  - {fileID: 2246429853303389081}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &3396426726624068491
@@ -96,7 +190,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 86c3cc9deda636b469896aa04ef814aa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -183,9 +277,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b44e0c258ac7a34c80b06c49fda7c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Player.PlayerMotor
-  stats: {fileID: 0}
+  stats: {fileID: 3267622594916015350}
   fallbackMoveSpeed: 6
   gravity: -20
+  moveAction: {fileID: 0}
+  playerInput: {fileID: 8796187475808654934}
+  moveActionName: Move
+  moveRelativeToTransform: 1
+  movementReference: {fileID: 0}
 --- !u!114 &323118332824972284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,9 +297,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c8b2a00936ae4042afa79f9f0ebffcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Player.PlayerAim
-  motor: {fileID: 0}
+  motor: {fileID: 6807249477815130439}
   faceMovementDirection: 1
   rotationLerpSpeed: 12
+  rotationTarget: {fileID: 0}
+  rotateRootIfNoTarget: 0
 --- !u!114 &8628801477834157803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,10 +330,43 @@ MonoBehaviour:
   projectileSystem: {fileID: 0}
   weaponDefinition: {fileID: 11400000, guid: a1ac9e363ec56314993206d85f450b66, type: 2}
   ownerEntityId: 1
-  teamId: 1
+  teamId: -1
   combatSource: {fileID: 8628801477834157803}
   playerStats: {fileID: 3267622594916015350}
   attackSpeedMultiplier: 1
   additionalProjectiles: 0
   autoFireEnabled: 1
-  requireMouseHold: 0
+  requireAttackInput: 0
+  attackAction: {fileID: 0}
+  playerInput: {fileID: 8796187475808654934}
+  attackActionName: Attack
+--- !u!114 &8796187475808654934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4916401883085894400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}

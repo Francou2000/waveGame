@@ -33,6 +33,17 @@ namespace WaveGame.Combat.Player
                 return;
             }
 
+            var target = rotationTarget;
+            if (target == null)
+            {
+                if (!rotateRootIfNoTarget)
+                {
+                    return;
+                }
+
+                target = transform;
+            }
+
             var targetRotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
             rotationTarget.rotation = Quaternion.Slerp(rotationTarget.rotation, targetRotation, rotationLerpSpeed * Time.deltaTime);
         }

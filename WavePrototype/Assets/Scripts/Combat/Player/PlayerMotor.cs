@@ -9,6 +9,14 @@ namespace WaveGame.Combat.Player
         [SerializeField] private PlayerStatsRuntime stats;
         [SerializeField] private float fallbackMoveSpeed = 6f;
         [SerializeField] private float gravity = -20f;
+        [Header("Input")]
+        [SerializeField] private InputActionReference moveAction;
+        [SerializeField] private PlayerInput playerInput;
+        [SerializeField] private string moveActionName = "Move";
+
+        [Header("Movement Space")]
+        [SerializeField] private bool moveRelativeToTransform = true;
+        [SerializeField] private Transform movementReference;
 
         [Header("Input")]
         [SerializeField] private InputActionReference moveAction;
