@@ -54,6 +54,15 @@ namespace WaveGame.Combat.Player
         [SerializeField] private bool moveRelativeToTransform = true;
         [SerializeField] private Transform movementReference;
 
+        [Header("Input")]
+        [SerializeField] private InputActionReference moveAction;
+        [SerializeField] private PlayerInput playerInput;
+        [SerializeField] private string moveActionName = "Move";
+
+        [Header("Movement Space")]
+        [SerializeField] private bool moveRelativeToTransform = true;
+        [SerializeField] private Transform movementReference;
+
         private CharacterController _controller;
         private float _verticalVelocity;
         private Vector3 _lastMoveDirection;
