@@ -8,6 +8,10 @@ namespace WaveGame.Combat.Player
         [SerializeField] private bool faceMovementDirection = true;
         [SerializeField] private float rotationLerpSpeed = 12f;
 
+        [Header("Target")]
+        [SerializeField] private Transform rotationTarget;
+        [SerializeField] private bool rotateRootIfNoTarget;
+
         private void Awake()
         {
             if (motor == null)
@@ -24,13 +28,25 @@ namespace WaveGame.Combat.Player
             }
 
             var dir = motor.LastMoveDirection;
+            dir.y = 0f;
             if (dir.sqrMagnitude <= 0.0001f)
             {
                 return;
             }
 
+            var target = rotationTarget;
+            if (target == null)
+            {
+                if (!rotateRootIfNoTarget)
+                {
+                    return;
+                }
+
+                target = transform;
+            }
+
             var targetRotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationLerpSpeed * Time.deltaTime);
+            target.rotation = Quaternion.Slerp(target.rotation, targetRotation, rotationLerpSpeed * Time.deltaTime);
         }
     }
 }
