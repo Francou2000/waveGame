@@ -18,6 +18,7 @@ namespace WaveGame.Combat.Projectiles
         [SerializeField, Min(0.05f)] private float impactVfxLifetime = 0.5f;
         [SerializeField] private GameObject damagePopupPrefab;
         [SerializeField, Min(0.05f)] private float damagePopupLifetime = 0.6f;
+        [SerializeField] private Vector3 damagePopupOffset = new(0f, 0.25f, 0f);
 
         private struct ActiveFx
         {
@@ -146,7 +147,8 @@ namespace WaveGame.Combat.Projectiles
 
                 if (_hitResolver.Resolve(hitEvent, out var resolvedDamage, out var isCritical))
                 {
-                    SpawnDamagePopup(hitEvent.HitPoint, resolvedDamage, isCritical);
+                    var popupPosition = ResolveDamagePopupPosition(hitEvent);
+                    SpawnDamagePopup(popupPosition, resolvedDamage, isCritical);
                 }
             }
         }
@@ -215,6 +217,16 @@ namespace WaveGame.Combat.Projectiles
             _activeImpactVfx.Add(new ActiveFx { Instance = go, DespawnTime = Time.time + impactVfxLifetime });
         }
 
+        private Vector3 ResolveDamagePopupPosition(in HitEvent hitEvent)
+        {
+            if (_targetProvider != null && _targetProvider.TryGetTarget(hitEvent.TargetId, out var target) && target != null)
+            {
+                return target.GetAimPoint() + damagePopupOffset;
+            }
+
+            return hitEvent.HitPoint + damagePopupOffset;
+        }
+
         private void SpawnDamagePopup(Vector3 position, float damage, bool isCritical)
         {
             if (damagePopupPrefab == null)
@@ -225,8 +237,7 @@ namespace WaveGame.Combat.Projectiles
             var maxPopups = globalConfig != null ? globalConfig.MaxActiveDamagePopups : 128;
             EnsureFxCapacity(_activeDamagePopups, Mathf.Max(1, maxPopups));
 
-            var popupPos = position + Vector3.up * 0.25f;
-            var go = Instantiate(damagePopupPrefab, popupPos, Quaternion.identity, transform);
+            var go = Instantiate(damagePopupPrefab, position, Quaternion.identity, transform);
             var scale = isCritical ? 1.35f : 1f;
             go.transform.localScale *= scale;
             _activeDamagePopups.Add(new ActiveFx { Instance = go, DespawnTime = Time.time + damagePopupLifetime });
