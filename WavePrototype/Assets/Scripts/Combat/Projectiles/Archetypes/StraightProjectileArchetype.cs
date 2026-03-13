@@ -66,7 +66,7 @@ namespace WaveGame.Combat.Projectiles.Archetypes
 
         private void HandleHit(ref ProjectileInstance projectile, IProjectileContext context, in RaycastHit hit)
         {
-            if (hit.collider.TryGetComponent<IDamageable>(out var damageable) && damageable.TeamId != projectile.TeamId)
+            if (hit.collider.GetComponentInParent<IDamageable>(out var damageable) && damageable.TeamId != projectile.TeamId)
             {
                 context.RegisterTarget(damageable);
 
