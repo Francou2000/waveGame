@@ -455,6 +455,7 @@
 "Assets/Scripts/Combat/Player/PlayerMotor.cs"
 "Assets/Scripts/Combat/Player/PlayerStatsDefinitionSO.cs"
 "Assets/Scripts/Combat/Player/PlayerStatsRuntime.cs"
+"Assets/Scripts/Combat/Player/ThirdPersonCameraOrbit.cs"
 "Assets/Scripts/Combat/Projectiles/Archetypes/AoEProjectileArchetype.cs"
 "Assets/Scripts/Combat/Projectiles/Archetypes/AuraProjectileArchetype.cs"
 "Assets/Scripts/Combat/Projectiles/Archetypes/BeamProjectileArchetype.cs"

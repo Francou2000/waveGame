@@ -134,3 +134,7 @@ MonoBehaviour:
   moveSpeed: 2.5
   aimPointHeightOffset: 1
   visualRenderer: {fileID: 5301966737095440870}
+  enableHitFlash: 1
+  hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
+  hitFlashDuration: 0.1
+  hitPunchScale: 1.3

@@ -35,11 +35,7 @@ namespace WaveGame.Combat.Player
 
             var target = rotationTarget;
             if (target == null)
-            {
-                if (!rotateRootIfNoTarget)
-                {
-                    return;
-                }
+            {   
 
                 target = transform;
             }

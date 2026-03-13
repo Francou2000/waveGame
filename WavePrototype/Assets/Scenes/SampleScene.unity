@@ -169,6 +169,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   projectileVisualPrefab: {fileID: 8609884302545948305, guid: 039efe602f41f0745a219ea7bc2d8400, type: 3}
+  impactVfxPrefab: {fileID: 6537091835771329933, guid: adf4f2c7bca6fa6468ccd4775248e7f6, type: 3}
+  impactVfxLifetime: 0.5
+  damagePopupPrefab: {fileID: 6674292977816068977, guid: e74e12cdc80b11d438c1d279f782076e, type: 3}
+  damagePopupLifetime: 0.6
+  damagePopupOffset: {x: 0, y: 1, z: 0}
 --- !u!4 &574948298
 Transform:
   m_ObjectHideFlags: 0
@@ -481,6 +486,10 @@ MonoBehaviour:
   maxAlive: 200
   spawnPerSecond: 20
   spawnRadius: 22
+  maxSpawnsPerFrame: 3
+  playerTransform: {fileID: 0}
+  minSpawnDistanceFromPlayer: 10
+  maxSpawnPositionAttempts: 8
 --- !u!114 &1203947644
 MonoBehaviour:
   m_ObjectHideFlags: 0
