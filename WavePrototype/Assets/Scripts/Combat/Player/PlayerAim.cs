@@ -21,7 +21,7 @@ namespace WaveGame.Combat.Player
 
         private void Update()
         {
-            if (!faceMovementDirection || motor == null || rotationTarget == null)
+            if (!faceMovementDirection || motor == null)
             {
                 return;
             }
@@ -33,15 +33,10 @@ namespace WaveGame.Combat.Player
                 return;
             }
 
-            var target = rotationTarget;
-            if (target == null)
-            {   
-
-                target = transform;
-            }
+            var target = rotationTarget != null ? rotationTarget : transform;
 
             var targetRotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
-            rotationTarget.rotation = Quaternion.Slerp(rotationTarget.rotation, targetRotation, rotationLerpSpeed * Time.deltaTime);
+            target.rotation = Quaternion.Slerp(target.rotation, targetRotation, rotationLerpSpeed * Time.deltaTime);
         }
     }
 }

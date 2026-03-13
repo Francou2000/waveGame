@@ -100,6 +100,11 @@ namespace WaveGame.Combat.Player
 
         private Vector3 ResolveMoveDirection(Vector2 input)
         {
+            if (moveRelativeToTransform && movementReference == null)
+            {
+                ResolveMovementReference();
+            }
+
             var move = new Vector3(input.x, 0f, input.y);
             if (!moveRelativeToTransform || movementReference == null)
             {
