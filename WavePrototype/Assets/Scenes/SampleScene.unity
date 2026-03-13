@@ -480,9 +480,9 @@ MonoBehaviour:
   initialPoolSize: 64
   maxAlive: 200
   spawnPerSecond: 20
-  spawnRadius: 22
+  spawnRadius: 35
   maxSpawnsPerFrame: 3
-  playerTransform: {fileID: 0}
+  playerTransform: {fileID: 374376704}
   minSpawnDistanceFromPlayer: 10
   maxSpawnPositionAttempts: 8
 --- !u!114 &1203947644
@@ -567,6 +567,7 @@ GameObject:
   - component: {fileID: 1789682467}
   - component: {fileID: 1789682466}
   - component: {fileID: 1789682465}
+  - component: {fileID: 1789682469}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -593,8 +594,8 @@ MonoBehaviour:
   lookAction: {fileID: 0}
   playerInput: {fileID: 1325845905}
   lookActionName: Look
-  yawSpeed: 150
-  pitchSpeed: 120
+  yawSpeed: 60
+  pitchSpeed: 45
   minPitch: -35
   maxPitch: 70
   invertY: 0
@@ -674,6 +675,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1789682469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789682464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aee05c04bc845141ac6f6a140adf207, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FrameRateCapper
+  targetFps: 60
 --- !u!1001 &7275201256296541501
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -737,7 +751,7 @@ PrefabInstance:
     - target: {fileID: 6807249477815130439, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
       propertyPath: movementReference
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1789682468}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -479,6 +479,7 @@
 "Assets/Scripts/Combat/Projectiles/ProjectileWeaponEmitter.cs"
 "Assets/Scripts/Combat/Projectiles/TestingArenaSpawner.cs"
 "Assets/Scripts/Combat/Projectiles/WeaponDefinition.cs"
+"Assets/Scripts/Misc/FrameRateCapper.cs"
 -langversion:9.0
 /deterministic
 /optimize+
