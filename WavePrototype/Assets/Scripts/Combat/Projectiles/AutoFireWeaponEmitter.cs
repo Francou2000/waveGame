@@ -251,7 +251,7 @@ namespace WaveGame.Combat.Projectiles
                 return true;
             }
 
-            return hit.collider != null && hit.collider.TryGetComponent<WaveGame.Combat.Interfaces.ITargetable>(out var targetable) && targetable.EntityId == targetId;
+            return hit.collider != null && hit.collider.GetComponentInParent<WaveGame.Combat.Interfaces.ITargetable>(out var targetable) && targetable.EntityId == targetId;
         }
 
         private Vector3 GetMuzzlePosition()

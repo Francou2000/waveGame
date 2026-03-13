@@ -40,7 +40,7 @@ namespace WaveGame.Combat.Projectiles
             for (var i = 0; i < count; i++)
             {
                 var col = _buffer[i];
-                if (col == null || !col.TryGetComponent<IDamageable>(out var damageable) || !damageable.IsAlive)
+                if (col == null || !col.GetComponentInParent<IDamageable>(out var damageable) || !damageable.IsAlive)
                 {
                     continue;
                 }

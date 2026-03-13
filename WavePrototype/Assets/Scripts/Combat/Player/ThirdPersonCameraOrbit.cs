@@ -23,6 +23,7 @@ namespace WaveGame.Combat.Player
 
         [Header("Init")]
         [SerializeField] private bool alignYawToTargetOnStart = true;
+        [SerializeField] private bool detachFromParentOnAwake = true;
 
         private InputAction _resolvedLookAction;
         private float _yaw;
@@ -36,6 +37,11 @@ namespace WaveGame.Combat.Player
             }
 
             ResolveLookAction();
+
+            if (detachFromParentOnAwake && transform.parent != null)
+            {
+                transform.SetParent(null, true);
+            }
 
             if (followTarget == null)
             {

@@ -18,7 +18,7 @@ namespace WaveGame.Combat.Projectiles.Archetypes
             for (var i = 0; i < count; i++)
             {
                 var col = _colliders[i];
-                if (col == null || !col.TryGetComponent<IDamageable>(out var damageable) || damageable.TeamId == projectile.TeamId)
+                if (col == null || !col.GetComponentInParent<IDamageable>(out var damageable) || damageable.TeamId == projectile.TeamId)
                 {
                     continue;
                 }
