@@ -171,8 +171,16 @@ namespace WaveGame.Combat.Projectiles
             for (var i = 0; i < count; i++)
             {
                 var dir = ApplyPattern(baseDir, i, count, now);
-                projectileSystem.TrySpawn(new ProjectileSpawnContext(weaponDefinition.ProjectileDefinition, ownerEntityId, teamId, muzzle, dir, targetId));
+                var spawnTargetId = ShouldPassTargetToProjectile() ? targetId : -1;
+                projectileSystem.TrySpawn(new ProjectileSpawnContext(weaponDefinition.ProjectileDefinition, ownerEntityId, teamId, muzzle, dir, spawnTargetId));
             }
+        }
+
+        private bool ShouldPassTargetToProjectile()
+        {
+            return weaponDefinition != null
+                && weaponDefinition.ProjectileDefinition != null
+                && weaponDefinition.ProjectileDefinition.ArchetypeType == ProjectileArchetypeType.Homing;
         }
 
         private int AcquireTarget(Vector3 origin, float now)
@@ -200,6 +208,14 @@ namespace WaveGame.Combat.Projectiles
             }
 
             _cachedTargetId = projectileSystem.TargetProvider.AcquireTarget(origin, forward, range, cone, teamId);
+
+            // Fallback: if no target is found in the configured cone/mode, grab nearest in full radius
+            // so straight projectiles can still snap toward an enemy before flying straight.
+            if (_cachedTargetId < 0)
+            {
+                _cachedTargetId = projectileSystem.TargetProvider.AcquireTarget(origin, Vector3.forward, range, 180f, teamId);
+            }
+
             _nextRetargetTime = now + (targeting != null ? Mathf.Max(0.05f, targeting.RetargetInterval) : 0.2f);
 
             if ((targeting != null && targeting.RequireLineOfSight) || weaponDefinition.RequiresLineOfSight)

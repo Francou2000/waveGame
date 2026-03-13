@@ -68,8 +68,9 @@ namespace WaveGame.Combat.Projectiles
                 }
 
                 var distScore = -to.sqrMagnitude;
+                var angleWeight = coneLimit < 179.9f ? 1000f : 0f;
                 var angleScore = 1f - (angle / 180f);
-                var score = distScore + (angleScore * 1000f);
+                var score = distScore + (angleScore * angleWeight);
 
                 if (score > bestScore)
                 {
