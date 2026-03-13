@@ -284,7 +284,7 @@ MonoBehaviour:
   playerInput: {fileID: 8796187475808654934}
   moveActionName: Move
   moveRelativeToTransform: 1
-  movementReference: {fileID: 0}
+  movementReference: {fileID: 2246429853303389081}
 --- !u!114 &323118332824972284
 MonoBehaviour:
   m_ObjectHideFlags: 0
