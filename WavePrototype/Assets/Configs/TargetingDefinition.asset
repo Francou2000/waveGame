@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04e074fca59ab6144813670a68373916, type: 3}
   m_Name: TargetingDefinition
   m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Projectiles.TargetingDefinitionSO
-  Mode: 0
-  AcquireRadius: 15
-  ConeAngleDeg: 70
+  Mode: 3
+  AcquireRadius: 50
+  ConeAngleDeg: 180
   RetargetInterval: 0.2
   RequireLineOfSight: 0
   AimPointHeightOffset: 1

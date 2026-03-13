@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34e677ec812a77841b5df4acd1590c4e, type: 3}
   m_Name: FirePattern
   m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Projectiles.FirePatternSO
-  PatternType: 0
-  ConeAngleDeg: 0
-  BurstCount: 1
+  PatternType: 1
+  ConeAngleDeg: 180
+  BurstCount: 15
   BurstInterval: 0.05
   AngularSpeedDegPerSec: 120
   LateralOffset: 0.25

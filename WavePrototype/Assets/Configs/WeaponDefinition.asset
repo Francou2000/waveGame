@@ -16,7 +16,7 @@ MonoBehaviour:
   FirePattern: {fileID: 11400000, guid: 408ec7736c4c6fe4cbe75e192a98f6e6, type: 2}
   Targeting: {fileID: 11400000, guid: 4d808d19f0f67ae4daa87a4ac499f0d1, type: 2}
   ProjectileDefinition: {fileID: 11400000, guid: a8a41f2c247a5424795e73a17bb10d57, type: 2}
-  ProjectilesPerShot: 1
+  ProjectilesPerShot: 15
   Range: 18
   RequiresLineOfSight: 0
   MuzzleLocalOffset: {x: 0, y: 1, z: 0.8}

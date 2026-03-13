@@ -40,7 +40,7 @@ MonoBehaviour:
   HitCooldownPerTarget: 0.1
   AcquireRadius: 20
   RetargetInterval: 0.35
-  PreferForwardAngle: 45
+  PreferForwardAngle: 180
   VisualPrefabId: 
   ImpactVfxId: 
   LoopVfxId: 
