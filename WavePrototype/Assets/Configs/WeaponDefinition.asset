@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: WeaponDefinition
   m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Projectiles.WeaponDefinition
   BaseCooldown: 0.8
-  FirePattern: {fileID: 0}
-  Targeting: {fileID: 0}
-  ProjectileDefinition: {fileID: 0}
+  FirePattern: {fileID: 11400000, guid: 408ec7736c4c6fe4cbe75e192a98f6e6, type: 2}
+  Targeting: {fileID: 11400000, guid: 4d808d19f0f67ae4daa87a4ac499f0d1, type: 2}
+  ProjectileDefinition: {fileID: 11400000, guid: a8a41f2c247a5424795e73a17bb10d57, type: 2}
   ProjectilesPerShot: 1
   Range: 18
   RequiresLineOfSight: 0

@@ -135,17 +135,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e03cf4192b66f4498c5be104a667cbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Player.PlayerStatsRuntime
---- !u!114 &374376709 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6807249477815130439, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
-  m_PrefabInstance: {fileID: 7275201256296541501}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b44e0c258ac7a34c80b06c49fda7c89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Player.PlayerMotor
 --- !u!1 &574948296
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,6 +168,12 @@ MonoBehaviour:
   enemyMask:
     serializedVersion: 2
     m_Bits: 8
+  projectileVisualPrefab: {fileID: 8609884302545948305, guid: 039efe602f41f0745a219ea7bc2d8400, type: 3}
+  impactVfxPrefab: {fileID: 6537091835771329933, guid: adf4f2c7bca6fa6468ccd4775248e7f6, type: 3}
+  impactVfxLifetime: 0.5
+  damagePopupPrefab: {fileID: 6674292977816068977, guid: e74e12cdc80b11d438c1d279f782076e, type: 3}
+  damagePopupLifetime: 0.6
+  damagePopupOffset: {x: 0, y: 1, z: 0}
 --- !u!4 &574948298
 Transform:
   m_ObjectHideFlags: 0
@@ -403,98 +398,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &963194225
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 963194228}
-  - component: {fileID: 963194227}
-  - component: {fileID: 963194226}
-  m_Layer: 0
-  m_Name: Main Camera
-  m_TagString: MainCamera
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!81 &963194226
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
---- !u!20 &963194227
-Camera:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
-  serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
-  m_projectionMatrixMode: 1
-  m_GateFitMode: 2
-  m_FOVAxisMode: 0
-  m_Iso: 200
-  m_ShutterSpeed: 0.005
-  m_Aperture: 16
-  m_FocusDistance: 10
-  m_FocalLength: 50
-  m_BladeCount: 5
-  m_Curvature: {x: 2, y: 11}
-  m_BarrelClipping: 0.25
-  m_Anamorphism: 0
-  m_SensorSize: {x: 36, y: 24}
-  m_LensShift: {x: 0, y: 0}
-  m_NormalizedViewPortRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
-  orthographic: 0
-  orthographic size: 5
-  m_Depth: -1
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
-  m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
-  m_AllowDynamicResolution: 0
-  m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
-  m_StereoConvergence: 10
-  m_StereoSeparation: 0.022
---- !u!4 &963194228
+--- !u!4 &963194228 stripped
 Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 2246429853303389081, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
+  m_PrefabInstance: {fileID: 7275201256296541501}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1203947640
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,11 +436,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6870ea7376ef674c800a61c9e625882, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Enemy.StressArenaBootstrap
-  playerTransform: {fileID: 0}
-  enemySystem: {fileID: 0}
-  enemySpawner: {fileID: 0}
-  enemyDeathSystem: {fileID: 0}
-  xpOrbSystem: {fileID: 0}
+  playerTransform: {fileID: 374376704}
+  enemySystem: {fileID: 1203947645}
+  enemySpawner: {fileID: 1203947643}
+  enemyDeathSystem: {fileID: 1203947644}
+  xpOrbSystem: {fileID: 1203947642}
   applyRecommendedStressValues: 1
   maxAlive: 900
   spawnPerSecond: 120
@@ -570,7 +478,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37cb01e048255324c856472b79a9f7e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Enemy.EnemySpawner
-  enemyPrefab: {fileID: 7608794767116975931, guid: 5dd81c274d106324b828994733d88aae, type: 3}
+  enemyPrefab: {fileID: -3418942173136490984, guid: 5dd81c274d106324b828994733d88aae, type: 3}
   enemyDefinition: {fileID: 11400000, guid: 15ef467aa8f74c74aa7f69455569511b, type: 2}
   enemySystem: {fileID: 1203947645}
   deathSystem: {fileID: 1203947644}
@@ -578,6 +486,10 @@ MonoBehaviour:
   maxAlive: 200
   spawnPerSecond: 20
   spawnRadius: 22
+  maxSpawnsPerFrame: 3
+  playerTransform: {fileID: 0}
+  minSpawnDistanceFromPlayer: 10
+  maxSpawnPositionAttempts: 8
 --- !u!114 &1203947644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -590,7 +502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a37fac8e73e89c4d9879f5a268ba9f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Enemy.EnemyDeathSystem
-  xpOrbSystem: {fileID: 0}
+  xpOrbSystem: {fileID: 1203947642}
 --- !u!114 &1203947645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -603,14 +515,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3835a482e192b784aab736fa64ef1e8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveGame.Combat.Enemy.EnemySystem
-  playerTarget: {fileID: 0}
+  playerTarget: {fileID: 374376704}
   enemyLayerMask:
     serializedVersion: 2
-    m_Bits: 0
-  seekWeight: 1
-  separationWeight: 1.5
-  separationRadius: 1
-  separationTickInterval: 0.08
+    m_Bits: 8
+  maxNeighborsPerEnemy: 16
+  steeringBuckets: 12
+  defaultSteeringInterval: 0.08
+  defaultMaxSpeed: 2.5
+  defaultAcceleration: 12
+  defaultTurnResponsiveness: 10
+  defaultSeekWeight: 1
+  defaultSeparationWeight: 1.6
+  defaultCohesionWeight: 0
+  defaultSeparationRadius: 1
+  defaultArriveRadius: 1.25
+  defaultTargetOffsetRadius: 0.65
+  defaultRandomWander: 0.12
+  drawDebugVectors: 0
+  drawSeparationRadius: 0
 --- !u!4 &1203947646
 Transform:
   m_ObjectHideFlags: 0
@@ -620,7 +543,7 @@ Transform:
   m_GameObject: {fileID: 1203947640}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.87999, y: -0.31, z: 2.91381}
+  m_LocalPosition: {x: -0.87999, y: 1, z: 2.91381}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -635,12 +558,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 323118332824972284, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
-      propertyPath: motor
+      propertyPath: rotationTarget
       value: 
-      objectReference: {fileID: 374376709}
+      objectReference: {fileID: 374376704}
     - target: {fileID: 3991722537724874667, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -14.91
+      value: -16.57
       objectReference: {fileID: 0}
     - target: {fileID: 3991722537724874667, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -648,7 +571,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3991722537724874667, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.11
+      value: -5.68
       objectReference: {fileID: 0}
     - target: {fileID: 3991722537724874667, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -683,21 +606,13 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 5771641432578904505, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
-      propertyPath: teamId
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5771641432578904505, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
       propertyPath: projectileSystem
       value: 
       objectReference: {fileID: 574948297}
     - target: {fileID: 6807249477815130439, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
-      propertyPath: stats
+      propertyPath: movementReference
       value: 
-      objectReference: {fileID: 374376705}
-    - target: {fileID: 7131542710644907456, guid: 9218e1352be9af04f8043e9dcd35a6e5, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 963194228}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -707,7 +622,6 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 963194228}
   - {fileID: 705507995}
   - {fileID: 7275201256296541501}
   - {fileID: 692057281}
