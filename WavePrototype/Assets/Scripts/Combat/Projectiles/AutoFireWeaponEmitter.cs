@@ -171,8 +171,16 @@ namespace WaveGame.Combat.Projectiles
             for (var i = 0; i < count; i++)
             {
                 var dir = ApplyPattern(baseDir, i, count, now);
-                projectileSystem.TrySpawn(new ProjectileSpawnContext(weaponDefinition.ProjectileDefinition, ownerEntityId, teamId, muzzle, dir, targetId));
+                var spawnTargetId = ShouldPassTargetToProjectile() ? targetId : -1;
+                projectileSystem.TrySpawn(new ProjectileSpawnContext(weaponDefinition.ProjectileDefinition, ownerEntityId, teamId, muzzle, dir, spawnTargetId));
             }
+        }
+
+        private bool ShouldPassTargetToProjectile()
+        {
+            return weaponDefinition != null
+                && weaponDefinition.ProjectileDefinition != null
+                && weaponDefinition.ProjectileDefinition.ArchetypeType == ProjectileArchetypeType.Homing;
         }
 
         private int AcquireTarget(Vector3 origin, float now)
