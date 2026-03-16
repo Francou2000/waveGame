@@ -6,6 +6,8 @@ namespace WaveGame.Combat.Enemy
     {
         [SerializeField] private XpOrbSystem xpOrbSystem;
 
+        public event System.Action<EnemyRuntime> EnemyDied;
+
         public void Register(EnemyRuntime enemy)
         {
             if (enemy == null)
@@ -39,6 +41,8 @@ namespace WaveGame.Combat.Enemy
             {
                 xpOrbSystem.SpawnXp(enemy.transform.position, xpValue);
             }
+
+            EnemyDied?.Invoke(enemy);
 
             enemy.FinalizeDeath();
         }

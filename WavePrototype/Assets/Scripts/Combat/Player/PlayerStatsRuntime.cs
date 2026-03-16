@@ -45,5 +45,25 @@ namespace WaveGame.Combat.Player
 
             currentXp += amount;
         }
+
+        public void AddAttackSpeedMultiplier(float amount)
+        {
+            if (amount <= 0f)
+            {
+                return;
+            }
+
+            attackSpeedMultiplier += amount;
+        }
+
+        public void AddMoveSpeed(float amount)
+        {
+            if (amount <= 0f)
+            {
+                return;
+            }
+
+            moveSpeed += amount;
+        }
     }
 }

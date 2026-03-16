@@ -36,6 +36,8 @@ namespace WaveGame.Combat.Enemy
         public float MoveSpeed => moveSpeed;
         public EnemyCategory Category => definition != null ? definition.Category : EnemyCategory.Minion;
         public EnemyDefinitionSO Definition => definition;
+        public float CurrentHealth => _currentHealth;
+        public float MaxHealth => maxHealth;
 
         public void SetDefinition(EnemyDefinitionSO enemyDefinition)
         {

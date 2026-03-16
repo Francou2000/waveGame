@@ -1,4 +1,8 @@
 using UnityEngine;
+using WaveGame.Combat.Boss;
+using WaveGame.Combat.Heat;
+using WaveGame.Combat.Player;
+using WaveGame.Combat.Progression;
 
 namespace WaveGame.Combat.Enemy
 {
@@ -19,6 +23,14 @@ namespace WaveGame.Combat.Enemy
         [SerializeField] private int maxAlive = 900;
         [SerializeField] private float spawnPerSecond = 120f;
         [SerializeField] private float spawnRadius = 28f;
+
+        [Header("Prototype Runtime Addons")]
+        [SerializeField] private HeatSystem heatSystem;
+        [SerializeField] private EnemyDirector enemyDirector;
+        [SerializeField] private SimpleBossEncounter bossEncounter;
+        [SerializeField] private PlayerLevelSystem levelSystem;
+        [SerializeField] private LevelRewardSystem rewardSystem;
+        [SerializeField] private WaveGame.Combat.DebugTools.CombatDebugHotkeys debugHotkeys;
 
         private void Awake()
         {
@@ -44,7 +56,7 @@ namespace WaveGame.Combat.Enemy
 
             if (playerTransform == null)
             {
-                var player = FindFirstObjectByType<WaveGame.Combat.Player.PlayerCombatAnchorProvider>();
+                var player = FindFirstObjectByType<PlayerCombatAnchorProvider>();
                 if (player != null)
                 {
                     playerTransform = player.transform;
@@ -59,6 +71,68 @@ namespace WaveGame.Combat.Enemy
             if (applyRecommendedStressValues && enemySpawner != null)
             {
                 enemySpawner.ConfigureRuntime(maxAlive, spawnPerSecond, spawnRadius);
+            }
+
+            EnsurePrototypeSystems();
+        }
+
+        private void EnsurePrototypeSystems()
+        {
+            if (heatSystem == null)
+            {
+                heatSystem = FindFirstObjectByType<HeatSystem>();
+            }
+
+            if (heatSystem == null)
+            {
+                heatSystem = gameObject.AddComponent<HeatSystem>();
+            }
+
+            if (enemyDirector == null)
+            {
+                enemyDirector = FindFirstObjectByType<EnemyDirector>();
+            }
+
+            if (enemyDirector == null)
+            {
+                enemyDirector = gameObject.AddComponent<EnemyDirector>();
+            }
+
+            if (bossEncounter == null)
+            {
+                bossEncounter = FindFirstObjectByType<SimpleBossEncounter>();
+            }
+
+            if (bossEncounter == null)
+            {
+                bossEncounter = gameObject.AddComponent<SimpleBossEncounter>();
+            }
+
+            if (levelSystem == null && playerTransform != null)
+            {
+                levelSystem = playerTransform.GetComponent<PlayerLevelSystem>();
+                if (levelSystem == null)
+                {
+                    levelSystem = playerTransform.gameObject.AddComponent<PlayerLevelSystem>();
+                }
+            }
+
+            if (rewardSystem == null && playerTransform != null)
+            {
+                rewardSystem = playerTransform.GetComponent<LevelRewardSystem>();
+                if (rewardSystem == null)
+                {
+                    rewardSystem = playerTransform.gameObject.AddComponent<LevelRewardSystem>();
+                }
+            }
+
+            if (debugHotkeys == null)
+            {
+                debugHotkeys = FindFirstObjectByType<WaveGame.Combat.DebugTools.CombatDebugHotkeys>();
+                if (debugHotkeys == null)
+                {
+                    debugHotkeys = gameObject.AddComponent<WaveGame.Combat.DebugTools.CombatDebugHotkeys>();
+                }
             }
         }
     }
