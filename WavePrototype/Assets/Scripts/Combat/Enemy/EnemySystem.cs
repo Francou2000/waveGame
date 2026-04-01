@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace WaveGame.Combat.Enemy
@@ -15,6 +16,8 @@ namespace WaveGame.Combat.Enemy
         [Header("Scheduling")]
         [SerializeField, Min(1)] private int steeringBuckets = 12;
         [SerializeField, Min(0.01f)] private float defaultSteeringInterval = 0.08f;
+        [SerializeField] private bool useParallelSteering = true;
+        [SerializeField, Min(8)] private int parallelSteeringThreshold = 48;
 
         [Header("Default Movement")]
         [SerializeField, Min(0.1f)] private float defaultMaxSpeed = 2.5f;
@@ -46,7 +49,10 @@ namespace WaveGame.Combat.Enemy
 
         private readonly List<EnemyRuntime> _activeEnemies = new(1024);
         private readonly Dictionary<int, BrainState> _brainByEnemyId = new(1024);
-        private readonly Collider[] _neighborHits = new Collider[96];
+        private readonly List<EnemyMovementProfileSO> _profileSnapshot = new(1024);
+        private readonly List<BrainState> _stateSnapshot = new(1024);
+        private readonly List<Vector3> _positionSnapshot = new(1024);
+        private readonly List<Vector3> _desiredDirectionSnapshot = new(1024);
         private int _bucketCursor;
 
         public void Register(EnemyRuntime enemy)
@@ -133,15 +139,23 @@ namespace WaveGame.Combat.Enemy
                         LastNeighborCount = 0
                     };
                 }
+            }
 
-                var profile = enemy.Definition != null ? enemy.Definition.MovementProfile : null;
+            BuildSnapshots(now);
+            ComputeDesiredDirections(now);
+
+            for (var i = 0; i < _activeEnemies.Count; i++)
+            {
+                var enemy = _activeEnemies[i];
+                var enemyId = enemy.EntityId;
+                var state = _stateSnapshot[i];
+                var profile = _profileSnapshot[i];
 
                 var steeringInterval = Mathf.Max(0.01f, profile != null ? profile.UpdateInterval : defaultSteeringInterval);
                 var shouldSteer = state.Bucket == _bucketCursor && now >= state.NextSteeringTime;
-
                 if (shouldSteer)
                 {
-                    state.DesiredDirection = ComputeDesiredDirection(enemy, profile, ref state);
+                    state.DesiredDirection = _desiredDirectionSnapshot[i];
                     state.NextSteeringTime = now + steeringInterval;
                 }
 
@@ -150,34 +164,94 @@ namespace WaveGame.Combat.Enemy
             }
         }
 
-        private Vector3 ComputeDesiredDirection(EnemyRuntime enemy, EnemyMovementProfileSO profile, ref BrainState state)
+        private void BuildSnapshots(float now)
         {
-            var seekWeight = profile != null ? profile.SeekWeight : defaultSeekWeight;
-            var separationWeight = profile != null ? profile.SeparationWeight : defaultSeparationWeight;
-            var cohesionWeight = profile != null ? profile.CohesionWeight : defaultCohesionWeight;
-            var randomWander = profile != null ? profile.RandomWander : defaultRandomWander;
+            _profileSnapshot.Clear();
+            _stateSnapshot.Clear();
+            _positionSnapshot.Clear();
+            _desiredDirectionSnapshot.Clear();
 
-            var seek = ComputeSeek(enemy, profile);
-            var separation = ComputeSeparation(enemy, profile, out var neighborCount);
-            var cohesion = cohesionWeight > 0f ? ComputeCohesion(enemy, profile, neighborCount) : Vector3.zero;
-            var wander = ComputeWander(Time.time, state.RandomPhase, randomWander);
-
-            state.LastNeighborCount = neighborCount;
-
-            var desired = (seek * seekWeight) + (separation * separationWeight) + (cohesion * cohesionWeight) + wander;
-            desired.y = 0f;
-
-            if (desired.sqrMagnitude <= 0.0001f)
+            for (var i = 0; i < _activeEnemies.Count; i++)
             {
-                return Vector3.zero;
-            }
+                var enemy = _activeEnemies[i];
+                var enemyId = enemy.EntityId;
+                var profile = enemy.Definition != null ? enemy.Definition.MovementProfile : null;
 
-            return desired.normalized;
+                if (!_brainByEnemyId.TryGetValue(enemyId, out var state))
+                {
+                    var bucketCount = Mathf.Max(1, steeringBuckets);
+                    var bucket = Mathf.Abs(enemyId) % bucketCount;
+                    state = new BrainState
+                    {
+                        DesiredDirection = Vector3.zero,
+                        CurrentVelocity = Vector3.zero,
+                        NextSteeringTime = now,
+                        Bucket = bucket,
+                        RandomPhase = Mathf.Abs(enemyId) * 0.6180339f,
+                        LastNeighborCount = 0
+                    };
+                }
+
+                _profileSnapshot.Add(profile);
+                _stateSnapshot.Add(state);
+                _positionSnapshot.Add(enemy.transform.position);
+                _desiredDirectionSnapshot.Add(state.DesiredDirection);
+            }
         }
 
-        private Vector3 ComputeSeek(EnemyRuntime enemy, EnemyMovementProfileSO profile)
+        private void ComputeDesiredDirections(float now)
         {
-            var enemyPos = enemy.transform.position;
+            var count = _activeEnemies.Count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            void ComputeAt(int i)
+            {
+                var enemy = _activeEnemies[i];
+                var state = _stateSnapshot[i];
+                var profile = _profileSnapshot[i];
+                var shouldSteer = state.Bucket == _bucketCursor && now >= state.NextSteeringTime;
+                if (!shouldSteer)
+                {
+                    _desiredDirectionSnapshot[i] = state.DesiredDirection;
+                    return;
+                }
+
+                var seekWeight = profile != null ? profile.SeekWeight : defaultSeekWeight;
+                var separationWeight = profile != null ? profile.SeparationWeight : defaultSeparationWeight;
+                var cohesionWeight = profile != null ? profile.CohesionWeight : defaultCohesionWeight;
+                var randomWander = profile != null ? profile.RandomWander : defaultRandomWander;
+
+                var seek = ComputeSeek(i, enemy, profile);
+                var separation = ComputeSeparationFromSnapshot(i, profile, out var neighborCount);
+                var cohesion = cohesionWeight > 0f ? ComputeCohesionFromSnapshot(i, profile, neighborCount) : Vector3.zero;
+                var wander = ComputeWander(now, state.RandomPhase, randomWander);
+                state.LastNeighborCount = neighborCount;
+
+                var desired = (seek * seekWeight) + (separation * separationWeight) + (cohesion * cohesionWeight) + wander;
+                desired.y = 0f;
+                _desiredDirectionSnapshot[i] = desired.sqrMagnitude > 0.0001f ? desired.normalized : Vector3.zero;
+                _stateSnapshot[i] = state;
+            }
+
+            if (useParallelSteering && count >= parallelSteeringThreshold && System.Environment.ProcessorCount > 1)
+            {
+                Parallel.For(0, count, ComputeAt);
+            }
+            else
+            {
+                for (var i = 0; i < count; i++)
+                {
+                    ComputeAt(i);
+                }
+            }
+        }
+
+        private Vector3 ComputeSeek(int index, EnemyRuntime enemy, EnemyMovementProfileSO profile)
+        {
+            var enemyPos = _positionSnapshot[index];
             var targetPos = playerTarget.position + GetTargetOffset(enemy, profile);
             var toTarget = targetPos - enemyPos;
             toTarget.y = 0f;
@@ -211,36 +285,31 @@ namespace WaveGame.Combat.Enemy
             return new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * radius;
         }
 
-        private Vector3 ComputeSeparation(EnemyRuntime enemy, EnemyMovementProfileSO profile, out int processedNeighbors)
+        private Vector3 ComputeSeparationFromSnapshot(int index, EnemyMovementProfileSO profile, out int processedNeighbors)
         {
             var radius = Mathf.Max(0.2f, profile != null ? profile.SeparationRadius : defaultSeparationRadius);
-            var center = enemy.transform.position;
-            var hitCount = Physics.OverlapSphereNonAlloc(center, radius, _neighborHits, enemyLayerMask, QueryTriggerInteraction.Ignore);
+            var center = _positionSnapshot[index];
             var push = Vector3.zero;
             processedNeighbors = 0;
-            var cap = Mathf.Clamp(maxNeighborsPerEnemy, 1, _neighborHits.Length);
+            var cap = Mathf.Max(1, maxNeighborsPerEnemy);
+            var radiusSqr = radius * radius;
 
-            for (var i = 0; i < hitCount && processedNeighbors < cap; i++)
+            for (var i = 0; i < _positionSnapshot.Count && processedNeighbors < cap; i++)
             {
-                var col = _neighborHits[i];
-                if (col == null)
+                if (i == index)
                 {
                     continue;
                 }
 
-                if (!col.TryGetComponent<EnemyRuntime>(out var other) || other == enemy || !other.IsAlive)
-                {
-                    continue;
-                }
-
-                var away = center - other.transform.position;
+                var away = center - _positionSnapshot[i];
                 away.y = 0f;
-                var distance = away.magnitude;
-                if (distance <= 0.0001f || distance > radius)
+                var distanceSqr = away.sqrMagnitude;
+                if (distanceSqr <= 0.0001f || distanceSqr > radiusSqr)
                 {
                     continue;
                 }
 
+                var distance = Mathf.Sqrt(distanceSqr);
                 var strength = 1f - (distance / radius);
                 push += away / distance * strength;
                 processedNeighbors++;
@@ -259,7 +328,7 @@ namespace WaveGame.Combat.Enemy
             return push;
         }
 
-        private Vector3 ComputeCohesion(EnemyRuntime enemy, EnemyMovementProfileSO profile, int neighborCount)
+        private Vector3 ComputeCohesionFromSnapshot(int index, EnemyMovementProfileSO profile, int neighborCount)
         {
             if (neighborCount <= 0)
             {
@@ -267,26 +336,27 @@ namespace WaveGame.Combat.Enemy
             }
 
             var radius = Mathf.Max(0.2f, profile != null ? profile.SeparationRadius : defaultSeparationRadius) * 1.5f;
-            var center = enemy.transform.position;
-            var hitCount = Physics.OverlapSphereNonAlloc(center, radius, _neighborHits, enemyLayerMask, QueryTriggerInteraction.Ignore);
+            var center = _positionSnapshot[index];
             var average = Vector3.zero;
             var count = 0;
-            var cap = Mathf.Clamp(maxNeighborsPerEnemy, 1, _neighborHits.Length);
+            var cap = Mathf.Max(1, maxNeighborsPerEnemy);
+            var radiusSqr = radius * radius;
 
-            for (var i = 0; i < hitCount && count < cap; i++)
+            for (var i = 0; i < _positionSnapshot.Count && count < cap; i++)
             {
-                var col = _neighborHits[i];
-                if (col == null)
+                if (i == index)
                 {
                     continue;
                 }
 
-                if (!col.TryGetComponent<EnemyRuntime>(out var other) || other == enemy || !other.IsAlive)
+                var toOther = _positionSnapshot[i] - center;
+                toOther.y = 0f;
+                if (toOther.sqrMagnitude > radiusSqr)
                 {
                     continue;
                 }
 
-                average += other.transform.position;
+                average += _positionSnapshot[i];
                 count++;
             }
 
