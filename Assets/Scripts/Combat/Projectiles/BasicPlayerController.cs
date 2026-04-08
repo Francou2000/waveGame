@@ -5,8 +5,8 @@ namespace WaveGame.Combat.Projectiles
 {
     /// <summary>
     /// Controlador básico de prototipo:
-    /// - Movimiento en plano XZ con WASD.
-    /// - Rotación hacia dirección de movimiento.
+    /// - Movimiento suave en plano XZ con WASD.
+    /// - Rotación amortiguada hacia dirección de movimiento.
     /// - Disparo continuo mientras se mantiene Mouse0.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
@@ -19,13 +19,17 @@ namespace WaveGame.Combat.Projectiles
         [Header("Movement")]
         [SerializeField] private float moveSpeed = 6f;
         [SerializeField] private float gravity = -20f;
-        [SerializeField] private float rotationLerpSpeed = 12f;
+        [SerializeField] private float acceleration = 20f;
+        [SerializeField] private float deceleration = 24f;
+        [SerializeField] private float turnSmoothTime = 0.1f;
 
         [Header("Shooting")]
         [SerializeField] private float fireRate = 6f;
 
         private CharacterController _characterController;
+        private Vector3 _horizontalVelocity;
         private float _verticalVelocity;
+        private float _turnVelocity;
         private float _nextShotTime;
 
         private void Awake()
@@ -57,7 +61,9 @@ namespace WaveGame.Combat.Projectiles
             var input = PlayerInputReader.GetMoveInput();
 
             var moveDirection = GetMoveDirectionOnPlane(input);
-            var horizontalVelocity = moveDirection * moveSpeed;
+            var targetHorizontalVelocity = moveDirection * moveSpeed;
+            var blend = targetHorizontalVelocity.sqrMagnitude > 0.001f ? acceleration : deceleration;
+            _horizontalVelocity = Vector3.MoveTowards(_horizontalVelocity, targetHorizontalVelocity, blend * dt);
 
             if (_characterController.isGrounded && _verticalVelocity < 0f)
             {
@@ -65,14 +71,15 @@ namespace WaveGame.Combat.Projectiles
             }
 
             _verticalVelocity += gravity * dt;
-            var velocity = horizontalVelocity + (Vector3.up * _verticalVelocity);
+            var velocity = _horizontalVelocity + (Vector3.up * _verticalVelocity);
 
             _characterController.Move(velocity * dt);
 
-            if (moveDirection.sqrMagnitude > 0.0001f)
+            if (_horizontalVelocity.sqrMagnitude > 0.01f)
             {
-                var targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationLerpSpeed * dt);
+                var targetYaw = Mathf.Atan2(_horizontalVelocity.x, _horizontalVelocity.z) * Mathf.Rad2Deg;
+                var smoothYaw = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetYaw, ref _turnVelocity, turnSmoothTime, Mathf.Infinity, dt);
+                transform.rotation = Quaternion.Euler(0f, smoothYaw, 0f);
             }
         }
 
@@ -90,7 +97,8 @@ namespace WaveGame.Combat.Projectiles
             forward.Normalize();
             right.Normalize();
 
-            return (right * input.x + forward * input.y).normalized;
+            var direction = right * input.x + forward * input.y;
+            return direction.sqrMagnitude > 1f ? direction.normalized : direction;
         }
 
         private void HandleShooting()
