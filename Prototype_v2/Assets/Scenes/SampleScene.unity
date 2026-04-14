@@ -1477,7 +1477,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1792624556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1493,15 +1493,15 @@ MonoBehaviour:
   _sfx: {fileID: 415765203}
   _musicNormal: {fileID: 1294498921}
   _musicOverheatLayer: {fileID: 879344417}
-  _shoot: {fileID: 0}
+  _shoot: {fileID: 8300000, guid: 0c7fc10ae82ea0f4585733cd24bbfde8, type: 3}
   _enemyHit: {fileID: 0}
   _enemyDeath: {fileID: 0}
-  _levelUp: {fileID: 0}
-  _overheatStart: {fileID: 0}
-  _overheatEnd: {fileID: 0}
-  _playerHurt: {fileID: 0}
+  _levelUp: {fileID: 8300000, guid: 436781a4dfc38554d8573dafae2c04e7, type: 3}
+  _overheatStart: {fileID: 8300000, guid: 8903ae293dd106f468dd3f4a464518bc, type: 3}
+  _overheatEnd: {fileID: 8300000, guid: 8903ae293dd106f468dd3f4a464518bc, type: 3}
+  _playerHurt: {fileID: 8300000, guid: 515aeae675683fe4386479086cde493b, type: 3}
   _sfxVolumeScale: 1
-  _bgmMain: {fileID: 0}
+  _bgmMain: {fileID: 8300000, guid: 6c7b5784fbc77ce40b6de96cd0f0faa1, type: 3}
   _bgmOverheatLayer: {fileID: 0}
   _musicMainVolume: 0.45
   _musicOverheatVolume: 0.35
